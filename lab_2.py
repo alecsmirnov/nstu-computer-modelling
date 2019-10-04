@@ -92,6 +92,14 @@ def test_2(x, K=20, alpha=0.05):
     return freq_pass and MX_pass and DX_pass
 
 
+def test_3(x, K=8, r=3):
+    t = len(x) // r
+    for i in range(r):
+        if not (test_1(x[i * t:(i+1) * t]) and test_2(x[i * t:(i+1) * t], K)):
+            return False
+    return True
+
+
 def main():
     a = 100
     b = 1
@@ -101,14 +109,17 @@ def main():
     n = 1000
 
     x = generator(x0, n, a, b, c)
-    #T = get_period(x)
+    T = get_period(x)
     #print(T, len(T))
 
-    #result = test_1(x[:100])
-    #print(result)
+    result = test_1(T[:100])
+    print(result)
 
-    result_2 = test_2(x[:100])
+    result_2 = test_2(T[:100])
     print(result_2)
+
+    result_3 = test_3(T[:100])
+    print(result_3)
 
     # period_max = 1
     # for a in range(130, 250):
