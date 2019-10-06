@@ -117,7 +117,7 @@ def sturgess_method(n):
 def chi2_test(x, alpha=0.05, m=1000):
     n = len(x)
     K = sturgess_method(n)
-    E = n / K
+    E = 1 / K
     v = calc_frequencies(x, K, m)
     S = n * sum([(O - E)**2 / E for O in v])
     S_alpha = st.chi2.isf(alpha, K - 1)
@@ -164,7 +164,6 @@ def main():
         print(result_3)
         print(result_chi2)
         print(result_kolm)
-
 
     # period_max = 1
     # for a in range(130, 250):
