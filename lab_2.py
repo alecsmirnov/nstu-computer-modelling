@@ -40,7 +40,9 @@ def test_1(x, alpha=0.05):
     for i in range(n - 1): 
         if x[i] > x[i+1]:
             Q += 1
-    return  Q - U * math.sqrt(n) / 2 <= n / 2 <= Q + U * math.sqrt(n) / 2
+    a = Q - U * math.sqrt(n) / 2
+    b = Q + U * math.sqrt(n) / 2
+    return a <= n / 2 <= b
 
 
 def calc_MX(x):
@@ -59,7 +61,8 @@ def calc_frequencies(x, K, m):
         for j in range(K):
             if m / K * j <= x[i] < m / K * (j+1):
                 interval_hit[j] += 1
-    return [x/n for x in interval_hit]
+    v = [x/n for x in interval_hit]
+    return v
 
 
 def frequencies_test(v, n, K, alpha, m=1000):
@@ -117,7 +120,8 @@ def chi2_test(x, alpha=0.05, m=1000):
     E = n / K
     v = calc_frequencies(x, K, m)
     S = n * sum([(O - E)**2 / E for O in v])
-    return S < st.chi2.isf(alpha, K - 1)
+    S_alpha = st.chi2.isf(alpha, K - 1)
+    return S < S_alpha
 
 
 def calc_D(x, m):
@@ -128,11 +132,12 @@ def calc_D(x, m):
 
 
 def kolmogorov_test(x, alpha=0.05, m=1000):
+    S_alpha = {0.15: 1.1379, 0.1: 1.2238, 0.05: 1.3581, 0.025: 1.4802, 0.01: 1.6276}
     sort_x = sorted(x)
     D = calc_D(sort_x, m)
     n = len(sort_x)
-    S = (6 * n * D + 1) / math.sqrt(n)
-    return S < st.ksone.ppf(1 - alpha / 2, n) * math.sqrt(n)
+    S = (n * D + 1) / math.sqrt(n)
+    return S < S_alpha[alpha]
 
 
 def main():
@@ -149,7 +154,7 @@ def main():
 
     if T_LEN_MAX <= len(T):
         result = test_1(T[:100])
-        result_2 = test_2(T[:100], plot=False)
+        result_2 = test_2(T[:100], plot=True)
         result_3 = test_3(T[:100])
         result_chi2 = chi2_test(T[:100])
         result_kolm = kolmogorov_test(T[:100])
@@ -159,6 +164,7 @@ def main():
         print(result_3)
         print(result_chi2)
         print(result_kolm)
+
 
     # period_max = 1
     # for a in range(130, 250):
