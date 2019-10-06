@@ -1,6 +1,5 @@
 import math
 import scipy.stats as st
-import matplotlib.pyplot as plt
 
 
 def generator(x0, n, a, b, c):
@@ -10,7 +9,7 @@ def generator(x0, n, a, b, c):
     return x
 
 
-def find_period(sequence):
+def period(sequence):
     seq = list(reversed(sequence))
     max_len = len(seq) // 2 + 1
     for i in range(2, max_len):
@@ -26,7 +25,7 @@ def test_1(x, alpha=0.05):
     for i in range(n - 1): 
         if x[i] > x[i+1]:
             Q += 1
-    return n / 2 < Q + U * math.sqrt(n) / 2 and Q - U * math.sqrt(n) / 2 < n / 2 
+    return  Q - U * math.sqrt(n) / 2 <= n / 2 <= Q + U * math.sqrt(n) / 2
 
 
 def calc_MX(x):
@@ -56,7 +55,7 @@ def frequencies_test(x, K, alpha, m=1000):
     for i in range(K):
         a = v[i] - U / K * math.sqrt(K - 1 / n) 
         b = v[i] + U / K * math.sqrt(K - 1 / n)
-        if 1 / K < a and b < 1 / K: 
+        if not (a <= 1 / K <= b): 
             errors.append(v[i])
     return errors == [], errors
 
@@ -65,13 +64,13 @@ def MX_estimate_test(MX, DX, n, alpha):
     U = st.norm.ppf(1 - alpha / 2)
     a = MX - U * math.sqrt(DX) / math.sqrt(n)
     b = MX + U * math.sqrt(DX) / math.sqrt(n) 
-    return not (n / 2 < a and b < n / 2)
+    return a <= n / 2 <= b
 
 
 def DX_estimate_test(DX, n, alpha):
     a = (n - 1) * DX / st.chi2.isf(1 - alpha / 2, n)
     b = (n - 1) * DX / st.chi2.isf(alpha / 2, n)
-    return not (n**2 / 12 < a and b < n**2 / 12)
+    return a <= n**2 / 12 <= b
 
 
 def test_2(x, K=20, alpha=0.05, m=1000):
@@ -129,23 +128,22 @@ def main():
     n = 1000
 
     x = generator(x0, n, a, b, c)
-    T = find_period(x)
-    #print(T, len(T))
+    T = period(x)
 
-    #result = test_1(T[:100])
-    #print(result)
+    result = test_1(T[:100])
+    print(result)
 
-    #result_2 = test_2(T[:100])
-    #print(result_2)
+    result_2 = test_2(T[:100])
+    print(result_2)
 
-    #result_3 = test_3(T[:100])
-    #print(result_3)
+    result_3 = test_3(T[:100])
+    print(result_3)
 
-    result_chi2 = chi2_test(T[:100])
-    print(result_chi2)
+    #result_chi2 = chi2_test(T[:100])
+    #print(result_chi2)
 
-    result_kolm = kolmogorov_test(T[:100])
-    print(result_kolm)
+    #result_kolm = kolmogorov_test(T[:100])
+    #print(result_kolm)
 
     # period_max = 1
     # for a in range(130, 250):
