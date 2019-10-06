@@ -62,11 +62,8 @@ def calc_frequencies(x, K, m):
     return [x/n for x in interval_hit]
 
 
-def frequencies_test(x, K, alpha, m=1000):
+def frequencies_test(v, n, K, alpha, m=1000):
     errors = []
-    n = len(x)
-    v = calc_frequencies(x, K, m)
-    draw_histogram(v, n, m)  
     U = st.norm.ppf(1 - alpha / 2)
     for i in range(K):
         a = v[i] - U / K * math.sqrt(K - 1 / n) 
@@ -89,11 +86,14 @@ def DX_estimate_test(DX, n, alpha):
     return a <= n**2 / 12 <= b
 
 
-def test_2(x, K=20, alpha=0.05, m=1000):
+def test_2(x, K=20, alpha=0.05, m=1000, plot=False):
     MX = calc_MX(x)
     DX = calc_DX(x)
+    v = calc_frequencies(x, K, m)
     n = len(x)
-    freq_pass, freq_errs = frequencies_test(x, K, alpha, m)
+    if plot == True:
+        draw_histogram(v, n, m)  
+    freq_pass, freq_errs = frequencies_test(v, n, K, alpha, m)
     MX_pass = MX_estimate_test(MX, DX, n, alpha)
     DX_pass = DX_estimate_test(DX, n, alpha)
     return freq_pass and MX_pass and DX_pass
@@ -138,7 +138,7 @@ def kolmogorov_test(x, alpha=0.05, m=1000):
 def main():
     a = 100
     b = 1
-    c = 2
+    c = 29
 
     x0 = 1
     n = 1000
@@ -146,20 +146,20 @@ def main():
     x = generator(x0, n, a, b, c)
     T = period(x)
 
-    #result = test_1(T[:100])
-    #print(result)
+    result = test_1(T[:100])
+    print(result)
 
-    result_2 = test_2(T[:100])
+    result_2 = test_2(T[:100], plot=False)
     print(result_2)
 
-    #result_3 = test_3(T[:100])
-    #print(result_3)
+    result_3 = test_3(T[:100])
+    print(result_3)
 
-    #result_chi2 = chi2_test(T[:100])
-    #print(result_chi2)
+    result_chi2 = chi2_test(T[:100])
+    print(result_chi2)
 
-    #result_kolm = kolmogorov_test(T[:100])
-    #print(result_kolm)
+    result_kolm = kolmogorov_test(T[:100])
+    print(result_kolm)
 
     # period_max = 1
     # for a in range(130, 250):
