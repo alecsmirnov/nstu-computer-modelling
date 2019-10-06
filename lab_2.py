@@ -1,5 +1,19 @@
 import math
 import scipy.stats as st
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def draw_histogram(data, n, m):
+    x = np.arange(len(data))
+    plt.bar(x, height=data, width=1, align='edge') 
+    plt.xticks(x)
+    plt.yticks(np.arange(0, max(data) + min([x for x in data if x != 0]), step=0.01))
+    plt.title("Frequency histogram (n = {0}, m = {1})".format(n, m))
+    plt.xlabel("Intervals")
+    plt.ylabel("Hit frequency")
+    plt.grid(True)
+    plt.show()
 
 
 def generator(x0, n, a, b, c):
@@ -51,6 +65,7 @@ def frequencies_test(x, K, alpha, m=1000):
     errors = []
     n = len(x)
     v = calc_frequencies(x, K, m)
+    draw_histogram(v, n, m)  
     U = st.norm.ppf(1 - alpha / 2)
     for i in range(K):
         a = v[i] - U / K * math.sqrt(K - 1 / n) 
@@ -68,8 +83,8 @@ def MX_estimate_test(MX, DX, n, alpha):
 
 
 def DX_estimate_test(DX, n, alpha):
-    a = (n - 1) * DX / st.chi2.isf(1 - alpha / 2, n)
-    b = (n - 1) * DX / st.chi2.isf(alpha / 2, n)
+    a = (n - 1) * DX / st.chi2.isf(1 - alpha / 2, n - 1)
+    b = (n - 1) * DX / st.chi2.isf(alpha / 2, n - 1)
     return a <= n**2 / 12 <= b
 
 
@@ -130,14 +145,14 @@ def main():
     x = generator(x0, n, a, b, c)
     T = period(x)
 
-    result = test_1(T[:100])
-    print(result)
+    #result = test_1(T[:100])
+    #print(result)
 
     result_2 = test_2(T[:100])
     print(result_2)
 
-    result_3 = test_3(T[:100])
-    print(result_3)
+    #result_3 = test_3(T[:100])
+    #print(result_3)
 
     #result_chi2 = chi2_test(T[:100])
     #print(result_chi2)
