@@ -10,7 +10,7 @@ def generator(x0, n, a, b, c):
     return x
 
 
-def get_period(sequence):
+def find_period(sequence):
     seq = list(reversed(sequence))
     max_len = len(seq) // 2 + 1
     for i in range(2, max_len):
@@ -19,18 +19,10 @@ def get_period(sequence):
     return seq
 
 
-def draw_chart(x, K):
-    gfig, gax = plt.subplots()
-    gn, gbins, gpatches = gax.hist(x, K, density=1)
-    gax.set_title("Гистограмма частот (n = " + str(len(x)) + ")") 
-    gfig.tight_layout() 
-    plt.show()
-
-
 def test_1(x, alpha=0.05):
+    n = len(x)
     U = st.norm.ppf(1 - alpha / 2)
     Q = 0
-    n = len(x)
     for i in range(n - 1): 
         if x[i] > x[i+1]:
             Q += 1
@@ -46,21 +38,21 @@ def calc_DX(x):
     return sum([(x - MX)**2 for x in x]) / (len(x) - 1)
 
 
-def calc_frequencies(x, K):
+def calc_frequencies(x, K, m):
     n = len(x)
     interval_hit = [0] * K
     for i in range(n):
         for j in range(K):
-            if n / K * j <= x[i] <= n / K * (j+1):
+            if m / K * j <= x[i] < m / K * (j+1):
                 interval_hit[j] += 1
     return [x/n for x in interval_hit]
 
 
-def frequencies_test(x, K, alpha):
+def frequencies_test(x, K, alpha, m=1000):
     errors = []
-    v = calc_frequencies(x, K)
-    U = st.norm.ppf(1 - alpha / 2)
     n = len(x)
+    v = calc_frequencies(x, K, m)
+    U = st.norm.ppf(1 - alpha / 2)
     for i in range(K):
         a = v[i] - U / K * math.sqrt(K - 1 / n) 
         b = v[i] + U / K * math.sqrt(K - 1 / n)
@@ -82,11 +74,11 @@ def DX_estimate_test(DX, n, alpha):
     return not (n**2 / 12 < a and b < n**2 / 12)
 
 
-def test_2(x, K=20, alpha=0.05):
+def test_2(x, K=20, alpha=0.05, m=1000):
     MX = calc_MX(x)
     DX = calc_DX(x)
     n = len(x)
-    freq_pass = frequencies_test(x, K, alpha)
+    freq_pass, freq_errs = frequencies_test(x, K, alpha, m)
     MX_pass = MX_estimate_test(MX, DX, n, alpha)
     DX_pass = DX_estimate_test(DX, n, alpha)
     return freq_pass and MX_pass and DX_pass
@@ -100,6 +92,34 @@ def test_3(x, K=8, r=3):
     return True
 
 
+def sturgess_method(n):
+    return math.floor(1 + math.log2(n))
+
+
+def chi2_test(x, alpha=0.05, m=1000):
+    n = len(x)
+    K = sturgess_method(n)
+    E = n / K
+    v = calc_frequencies(x, K, m)
+    S = n * sum([(O - E)**2 / E for O in v])
+    return S < st.chi2.isf(alpha, K - 1)
+
+
+def calc_D(x, m):
+    n = len(x)
+    D_plus = max([(i+1) / n - x[i] / m for i in range(n)])
+    D_minus = max([x[i] / m - i / n for i in range(n)])
+    return max(D_plus, D_minus)
+
+
+def kolmogorov_test(x, alpha=0.05, m=1000):
+    sort_x = sorted(x)
+    D = calc_D(sort_x, m)
+    n = len(sort_x)
+    S = (6 * n * D + 1) / math.sqrt(n)
+    return S < st.ksone.ppf(1 - alpha / 2, n) * math.sqrt(n)
+
+
 def main():
     a = 100
     b = 1
@@ -109,17 +129,23 @@ def main():
     n = 1000
 
     x = generator(x0, n, a, b, c)
-    T = get_period(x)
+    T = find_period(x)
     #print(T, len(T))
 
-    result = test_1(T[:100])
-    print(result)
+    #result = test_1(T[:100])
+    #print(result)
 
-    result_2 = test_2(T[:100])
-    print(result_2)
+    #result_2 = test_2(T[:100])
+    #print(result_2)
 
-    result_3 = test_3(T[:100])
-    print(result_3)
+    #result_3 = test_3(T[:100])
+    #print(result_3)
+
+    result_chi2 = chi2_test(T[:100])
+    print(result_chi2)
+
+    result_kolm = kolmogorov_test(T[:100])
+    print(result_kolm)
 
     # period_max = 1
     # for a in range(130, 250):
