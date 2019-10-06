@@ -142,24 +142,23 @@ def main():
 
     x0 = 1
     n = 1000
+    T_LEN_MAX = 100
 
     x = generator(x0, n, a, b, c)
     T = period(x)
 
-    result = test_1(T[:100])
-    print(result)
+    if T_LEN_MAX <= len(T):
+        result = test_1(T[:100])
+        result_2 = test_2(T[:100], plot=False)
+        result_3 = test_3(T[:100])
+        result_chi2 = chi2_test(T[:100])
+        result_kolm = kolmogorov_test(T[:100])
 
-    result_2 = test_2(T[:100], plot=False)
-    print(result_2)
-
-    result_3 = test_3(T[:100])
-    print(result_3)
-
-    result_chi2 = chi2_test(T[:100])
-    print(result_chi2)
-
-    result_kolm = kolmogorov_test(T[:100])
-    print(result_kolm)
+        print(result)
+        print(result_2)
+        print(result_3)
+        print(result_chi2)
+        print(result_kolm)
 
     # period_max = 1
     # for a in range(130, 250):
