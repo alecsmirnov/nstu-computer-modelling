@@ -6,12 +6,13 @@ import matplotlib.pyplot as plt
 
 def draw_histogram(data, n, m):
     x = np.arange(len(data))
+    data_min = min([x for x in data if x != 0])
     plt.bar(x, height=data, width=1, align='edge') 
     plt.xticks(x)
-    plt.yticks(np.arange(0, max(data) + min([x for x in data if x != 0]), step=0.01))
+    plt.yticks(np.arange(0, max(data) + data_min, step=data_min/2))
     plt.title("Frequency histogram (n = {0}, m = {1})".format(n, m))
-    plt.xlabel("Intervals")
-    plt.ylabel("Hit frequency")
+    plt.xlabel("Intervals (K)")
+    plt.ylabel("Hit frequency (v)")
     plt.grid(True)
     plt.show()
 
