@@ -17,10 +17,10 @@ def draw_histogram(data, n, m):
     plt.show()
 
 
-def generator(x0, n, a, b, c):
+def generator(x0, n, m, a, b, c):
     x = [x0]
     for i in range(n):
-        x.append((a * x[i]**2 + b * x[i] + c) % n)
+        x.append((a * x[i]**2 + b * x[i] + c) % m)
     return x
 
 
@@ -54,7 +54,7 @@ def calc_DX(x):
     return sum([(x - MX)**2 for x in x]) / (len(x) - 1)
 
 
-def calc_frequencies(x, K, m):
+def calc_frequencies(x, m, K):
     n = len(x)
     interval_hit = [0] * K
     for i in range(n):
@@ -65,7 +65,7 @@ def calc_frequencies(x, K, m):
     return v
 
 
-def frequencies_test(v, n, K, alpha, m=1000):
+def frequencies_test(v, n, m, K, alpha):
     errors = []
     U = st.norm.ppf(1 - alpha / 2)
     for i in range(K):
@@ -76,36 +76,36 @@ def frequencies_test(v, n, K, alpha, m=1000):
     return errors == [], errors
 
 
-def MX_estimate_test(MX, DX, n, alpha):
+def MX_estimate_test(MX, DX, n, m, alpha):
     U = st.norm.ppf(1 - alpha / 2)
     a = MX - U * math.sqrt(DX) / math.sqrt(n)
     b = MX + U * math.sqrt(DX) / math.sqrt(n) 
-    return a <= n / 2 <= b
+    return a <= m / 2 <= b
 
 
-def DX_estimate_test(DX, n, alpha):
-    a = (n - 1) * DX / st.chi2.isf(1 - alpha / 2, n - 1)
-    b = (n - 1) * DX / st.chi2.isf(alpha / 2, n - 1)
-    return a <= n**2 / 12 <= b
+def DX_estimate_test(DX, n, m, alpha):
+    a = (n - 1) * DX / st.chi2.isf(alpha / 2, n - 1)
+    b = (n - 1) * DX / st.chi2.isf(1 - alpha / 2, n - 1)
+    return a <= m**2 / 12 <= b
 
 
-def test_2(x, K=20, alpha=0.05, m=1000, plot=False):
+def test_2(x, m=1000, K=20, alpha=0.05, plot=False):
     MX = calc_MX(x)
     DX = calc_DX(x)
-    v = calc_frequencies(x, K, m)
+    v = calc_frequencies(x, m, K)
     n = len(x)
     if plot == True:
         draw_histogram(v, n, m)  
-    freq_pass, freq_errs = frequencies_test(v, n, K, alpha, m)
-    MX_pass = MX_estimate_test(MX, DX, n, alpha)
-    DX_pass = DX_estimate_test(DX, n, alpha)
+    freq_pass, freq_errs = frequencies_test(v, n, m, K, alpha)
+    MX_pass = MX_estimate_test(MX, DX, n, m, alpha)
+    DX_pass = DX_estimate_test(DX, n, m, alpha)
     return freq_pass and MX_pass and DX_pass
 
 
-def test_3(x, K=8, r=3):
+def test_3(x, m=1000, K=8, r=3):
     t = len(x) // r
     for i in range(r):
-        if not (test_1(x[i * t:(i+1) * t]) and test_2(x[i * t:(i+1) * t], K)):
+        if not (test_1(x[i * t:(i+1) * t]) and test_2(x[i * t:(i+1) * t], m, K)):
             return False
     return True
 
@@ -114,11 +114,11 @@ def sturgess_method(n):
     return math.floor(1 + math.log2(n))
 
 
-def chi2_test(x, alpha=0.05, m=1000):
+def chi2_test(x,  m=1000, alpha=0.05):
     n = len(x)
     K = sturgess_method(n)
     E = 1 / K
-    v = calc_frequencies(x, K, m)
+    v = calc_frequencies(x, m, K)
     S = n * sum([(O - E)**2 / E for O in v])
     S_alpha = st.chi2.isf(alpha, K - 1)
     return S < S_alpha
@@ -131,7 +131,7 @@ def calc_D(x, m):
     return max(D_plus, D_minus)
 
 
-def kolmogorov_test(x, alpha=0.05, m=1000):
+def kolmogorov_test(x, m=1000, alpha=0.05):
     S_alpha = {0.15: 1.1379, 0.1: 1.2238, 0.05: 1.3581, 0.025: 1.4802, 0.01: 1.6276}
     sort_x = sorted(x)
     D = calc_D(sort_x, m)
@@ -149,7 +149,7 @@ def main():
     n = 1000
     T_LEN_MAX = 100
 
-    x = generator(x0, n, a, b, c)
+    x = generator(x0, n, n, a, b, c)
     T = period(x)
 
     if T_LEN_MAX <= len(T):
