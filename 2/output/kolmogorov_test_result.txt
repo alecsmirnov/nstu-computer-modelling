@@ -1,0 +1,9 @@
+alpha: 0.05
+n: 100
+m: 1000
+D: 0.033
+
+S: 0.43
+S_alpha: 1.358
+
+test passed (S < S_alpha = 0.43 < 1.358): True

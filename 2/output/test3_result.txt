@@ -1,0 +1,12 @@
+alpha: 0.05
+n: 100
+m: 1000
+K: 8
+r: 3
+
+i	test1	test2:
+0	True	True
+1	True	True
+2	True	True
+
+test passed: True

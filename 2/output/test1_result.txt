@@ -1,0 +1,7 @@
+alpha: 0.05
+n: 100
+Q: 51
+confidence interval: [41.2; 60.8]
+value: 50.0
+
+test passed: True

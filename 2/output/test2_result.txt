@@ -1,0 +1,18 @@
+alpha: 0.05
+n: 100
+m: 1000
+K: 20
+v: 0.05, 0.04, 0.05, 0.04, 0.05, 0.06, 0.06, 0.05, 0.04, 0.07, 0.04, 0.04, 0.07, 0.05, 0.03, 0.05, 0.05, 0.04, 0.06, 0.06
+frequencies test passed: True
+
+MX: 505.5
+confidence interval: [448.67; 562.33]
+value: 500.0
+MX test passed: True
+
+DX: 84073.99
+confidence interval: [64812.304; 113456.958]
+value: 83333.333
+DX test passed: True
+
+test passed: True
