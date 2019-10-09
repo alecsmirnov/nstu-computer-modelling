@@ -103,7 +103,7 @@ def write_test1_results(filename, precision, alpha, n, Q, a, b, val, passed):
             f.write(miss_text.format(round(val, precision), round(a, precision), round(b, precision)))
         else:
             f.write(miss_text.format(round(a, precision), round(b, precision), round(val, precision)))
-    f.write("\nРезульт прохождения теста: {0}".format(passed))
+    f.write("\nРезультат прохождения теста: {0}".format(passed))
     f.close()
 
 
@@ -148,7 +148,7 @@ def write_test2_results(filename, precision, alpha, n, m, K,
         else:
             f.write(miss_text.format(round(DX_a, precision), round(DX_b, precision), round(DX_val, precision)))
     f.write("Результат оценки сходимости дисперсии: {0}\n".format(DX_pass))
-    f.write("\nРезульт прохождения теста: {0}".format(passed))
+    f.write("\nРезультат прохождения теста: {0}".format(passed))
     f.close()
 
 
@@ -164,14 +164,14 @@ def write_test3_results(filename, alpha, n, m, K, r, iters_info, passed):
     f.write("i\tTecт 1\tТест 2\n")
     for iter in iters_info:
         f.write("{0}\t{1}\t{2}\n".format(iter[0], iter[1], iter[2]))
-    f.write("\nРезульт прохождения теста: {0}".format(passed))
+    f.write("\nРезультат прохождения теста: {0}".format(passed))
     f.close()
 
 
 # Записать в файл результаты хи-квадрат теста
 def write_chi2_results(filename, precision, alpha, n, m, K, E, v, S, S_alpha, passed):
     f = open(filename, "w")
-    f.write("Квантель хи-квадрат распределения (alpha): {0}\n".format(alpha))
+    f.write("Квантиль хи-квадрат распределения (alpha): {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))
     f.write("Основание последовательности (m): {0}\n".format(m))
     f.write("Количество интервалов (K): {0}\n".format(K))
@@ -184,7 +184,7 @@ def write_chi2_results(filename, precision, alpha, n, m, K, E, v, S, S_alpha, pa
         f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
     else:
         f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
-    f.write("\nРезульт прохождения теста: {0}".format(passed))
+    f.write("\nРезультат прохождения теста: {0}".format(passed))
     f.close()
 
 
@@ -201,5 +201,5 @@ def write_kolmogorov_results(filename, precision, alpha, n, m, D, S, S_alpha, pa
         f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
     else:
         f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
-    f.write("\nРезульт прохождения теста: {0}".format(passed))
+    f.write("\nРезультат прохождения теста: {0}".format(passed))
     f.close()
