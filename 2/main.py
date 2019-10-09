@@ -1,5 +1,6 @@
 import generator as gr
 import sequence_tests as tst
+import random
 
 
 # Названия файлов входных данных 
@@ -7,14 +8,15 @@ GENERATOR_FILENAME = tst.INPUT_PATH + "generator_settings.txt"
 TESTS_FILENAME     = tst.INPUT_PATH + "tests_settings.txt"
 
 # Названия файлов выходных данных
-SEQUENCE_FILENAME = tst.OUTPUT_PATH + "sequence.txt"
-PERIOD_FILENAME   = tst.OUTPUT_PATH + "period.txt"
+SEQUENCE_FILENAME        = tst.OUTPUT_PATH + "sequence.txt"
+PERIOD_FILENAME          = tst.OUTPUT_PATH + "period.txt"
 ANALYSIS_RESULT_FILENAME = tst.OUTPUT_PATH + "analysis_result.txt"
 
 
 def main():
     x0, a, b, c, n, m = tst.ff.read_generator_settings(GENERATOR_FILENAME)
     x = gr.generator(x0, a, b, c, n, m)
+    #x = [random.randrange(0, m) for x in range(n)]
     T = gr.period(x)
     T_len_min, tests_data = tst.ff.read_tests_settings(TESTS_FILENAME)
     tests_result = []

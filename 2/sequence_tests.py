@@ -31,12 +31,12 @@ def draw_histogram(picturename, data, n=0, m=0):
     plt.bar(x, height=data, width=1, align="edge") 
     plt.xticks(x)
     plt.yticks(np.arange(0, max(data) + data_min, step=data_min/2))
-    title = "Frequency histogram"
+    title = "Частотная гистограмма"
     if n != 0 and m != 0:
         title += " (n = {0}, m = {1})".format(n, m)
     plt.title(title)
-    plt.xlabel("Intervals (K)")
-    plt.ylabel("Hit frequency (v)")
+    plt.xlabel("Количество интервалов (K)")
+    plt.ylabel("Относительные частоты (v)")
     plt.grid(True)
     plt.savefig(picturename)
     plt.clf()
