@@ -11,7 +11,7 @@ def read_generator_settings(filename):
     try:
         f = open(filename, "r")
     except IOError:
-        print("Could not read file: ", filename)
+        print("Невозможно открыть файл: ", filename)
         sys.exit()
     # Начальный элемент последовательности
     x0 = int(f.readline())
@@ -28,7 +28,7 @@ def read_tests_settings(filename):
     try:
         f = open(filename, "r")
     except IOError:
-        print("Could not read file: ", filename)
+        print("Невозможно открыть файл: ", filename)
         sys.exit()
     # Количество тестов
     TESTS_COUNT = 5
@@ -67,136 +67,139 @@ def write_sequence(filename, seq):
 # Записать в файл результаты тестирования последовательности
 def write_analysis_result(filename, x0, a, b, c, n, m, T_len, tests_result):
     with open(filename, "w") as f:
-        f.write("Sequence with parameters:\n")
+        f.write("Последовательность с параметрами:\n")
         f.write("x0: {0}\n".format(x0))
         f.write("a: {0}\n".format(a))
         f.write("b: {0}\n".format(b))
         f.write("c: {0}\n".format(c))
-        f.write("n: {0}\n".format(n))
-        f.write("m: {0}\n".format(n))
-        f.write("period len: {0}\n".format(T_len))
+        f.write("n (Длина): {0}\n".format(n))
+        f.write("m (Основание): {0}\n".format(n))
+        f.write("len(T) (Длина периода): {0}\n".format(T_len))
         if tests_result != []:
-            f.write("\nTests result:\n")
-            f.write("test 1: {0}\n".format(tests_result[0]))
-            f.write("test 2: {0}\n".format(tests_result[1]))
-            f.write("test 3: {0}\n".format(tests_result[2]))
-            f.write("chi2 test: {0}\n".format(tests_result[3]))
-            f.write("kolmogorov test: {0}\n".format(tests_result[4]))
+            f.write("\nРезультаты тестов:\n")
+            f.write("1) Тест 1: {0}\n".format(tests_result[0]))
+            f.write("2) Тест 2: {0}\n".format(tests_result[1]))
+            f.write("3) Тест 3: {0}\n".format(tests_result[2]))
+            f.write("4) Хи-квадрат тест: {0}\n".format(tests_result[3]))
+            f.write("5) Тест Колмогорова: {0}\n".format(tests_result[4]))
         else:
-            f.write("\nPeriod of the generated sequence is less than {0}!\n".format(T_len))
+            f.write("\nПериод сгенерированной последовательности меньше чем {0}!\n".format(T_len))
 
 
 # Записать в файл результаты теста 1
 def write_test1_results(filename, precision, alpha, n, Q, a, b, val, passed):
     f = open(filename, "w")
-    # Уровень значимости
-    f.write("alpha: {0}\n".format(alpha))
-    # Количество элементов последовательности
-    f.write("n: {0}\n".format(n))
-    # Количество перестановок
-    f.write("Q: {0}\n".format(Q))
-    # Доверительный интервал
-    f.write("confidence interval: [{0}; {1}]\n".format(round(a, precision), round(b, precision)))
-    # Значение попадающее (или нет) в доверительный интервал
-    f.write("value: {0}\n".format(round(val, precision)))
-    f.write("\ntest passed: {0}".format(passed))
+    f.write("Квантиль уровня (1 - alpha / 2) нормального распределения: {0}\n".format(alpha))
+    f.write("Количество элементов (n): {0}\n".format(n))
+    f.write("Количество перестановок (Q): {0}\n".format(Q))
+    f.write("Доверительный интервал: [{0}; {1}]\n".format(round(a, precision), round(b, precision)))
+    f.write("Значение (n / 2): {0}\n".format(round(val, precision)))
+    if passed == True:
+        hit_text = "Значение попадает в доверительный интервал: {0} <= {1} <= {2}\n"
+        f.write(hit_text.format(round(a, precision), round(val, precision), round(b, precision)))
+    else:
+        miss_text = "Значение не попадает в доверительный интервал: {0} < {1} < {2}\n"
+        if val < a:
+            f.write(miss_text.format(round(val, precision), round(a, precision), round(b, precision)))
+        else:
+            f.write(miss_text.format(round(a, precision), round(b, precision), round(val, precision)))
+    f.write("\nРезульт прохождения теста: {0}".format(passed))
     f.close()
 
 
 # Записать в файл результаты теста 2
 def write_test2_results(filename, precision, alpha, n, m, K,
-                       v, freq_pass, freq_errs, 
+                       v, freq_pass, freq_table, 
                        MX, MX_pass, MX_a, MX_b, MX_val, 
                        DX, DX_pass, DX_a, DX_b, DX_val, passed):
     f = open(filename, "w")
-    # Уровень значимости
-    f.write("alpha: {0}\n".format(alpha))
-    # Количество элементов последовательности
-    f.write("n: {0}\n".format(n))
-    # Основание последовательности
-    f.write("m: {0}\n".format(m))
-    # Количество интервалов разбиваемой последовательности
-    f.write("K: {0}\n".format(K))
-    # Относительные частоты попадания в интервал
-    f.write("v: {0}\n".format(str(v).strip('[]')))
-    # В случае провала теста -- вывод ошибок: вероятностей не попавших в интервал
-    if freq_pass == False:
-        f.write("frequencies test errors: {0}\n".format(str(v).strip('[]')))
-    # Результат прохождения частотного теста
-    f.write("frequencies test passed: {0}\n".format(freq_pass))
-    f.write("\nMX: {0}\n".format(round(MX, precision)))
-    # Доверительный интервал
-    f.write("confidence interval: [{0}; {1}]\n".format(round(MX_a, precision), round(MX_b, precision)))
-    f.write("value: {0}\n".format(round(MX_val, precision)))
-    # Результат оценки сходимости математического ожидания
-    f.write("MX test passed: {0}\n".format(MX_pass))
-    f.write("\nDX: {0}\n".format(round(DX, precision)))
-    # Доверительный интервал
-    f.write("confidence interval: [{0}; {1}]\n".format(round(DX_a, precision), round(DX_b, precision)))
-    f.write("value: {0}\n".format(round(DX_val, precision)))
-    # Результат оценки сходимости дисперсии
-    f.write("DX test passed: {0}\n".format(DX_pass))
-    f.write("\ntest passed: {0}".format(passed))
+    f.write("Квантиль уровня (1 - alpha / 2) нормального распределения: {0}\n".format(alpha))
+    f.write("Количество элементов (n): {0}\n".format(n))
+    f.write("Основание последовательности (m): {0}\n".format(m))
+    f.write("Количество интервалов (K): {0}\n".format(K))
+    f.write("Относительные частоты попадания в интервал (v): {0}\n".format(str(v).strip('[]')))
+    f.write("Таблица попадания частот:\n")
+    for item in freq_table:
+        f.write("{0}:\t[{1}; {2}], vi = {3}:\t{4}\n".format(item[0], round(item[1], precision), round(item[2], precision), round(item[3], precision), item[4]))
+    f.write("Результат прохождения частотного теста: {0}\n".format(freq_pass))
+    f.write("\nМатематическое ожидание (MX): {0}\n".format(round(MX, precision)))
+    f.write("Доверительный интервал: [{0}; {1}]\n".format(round(MX_a, precision), round(MX_b, precision)))
+    f.write("Значение (m / 2): {0}\n".format(round(MX_val, precision)))
+    if MX_pass == True:
+        hit_text = "Значение попадает в доверительный интервал: {0} <= {1} <= {2}\n"
+        f.write(hit_text.format(round(MX_a, precision), round(MX_val, precision), round(MX_b, precision)))
+    else:
+        miss_text = "Значение не попадает в доверительный интервал: {0} < {1} < {2}\n"
+        if MX_val < MX_a:
+            f.write(miss_text.format(round(MX_val, precision), round(MX_a, precision), round(MX_b, precision)))
+        else:
+            f.write(miss_text.format(round(MX_a, precision), round(MX_b, precision), round(MX_val, precision)))
+    f.write("Результат оценки сходимости мат ожидания: {0}\n".format(MX_pass))
+    f.write("\nДисперсия (DX): {0}\n".format(round(DX, precision)))
+    f.write("Доверительный интервал: [{0}; {1}]\n".format(round(DX_a, precision), round(DX_b, precision)))
+    f.write("Значение (m^2 / 12): {0}\n".format(round(DX_val, precision)))
+    if DX_pass == True:
+        hit_text = "Значение попадает в доверительный интервал: {0} <= {1} <= {2}\n"
+        f.write(hit_text.format(round(DX_a, precision), round(DX_val, precision), round(DX_b, precision)))
+    else:
+        miss_text = "Значение не попадает в доверительный интервал: {0} < {1} < {2}\n"
+        if DX_val < DX_a:
+            f.write(miss_text.format(round(DX_val, precision), round(DX_a, precision), round(DX_b, precision)))
+        else:
+            f.write(miss_text.format(round(DX_a, precision), round(DX_b, precision), round(DX_val, precision)))
+    f.write("Результат оценки сходимости дисперсии: {0}\n".format(DX_pass))
+    f.write("\nРезульт прохождения теста: {0}".format(passed))
     f.close()
 
 
 # Записать в файл результаты теста 3
 def write_test3_results(filename, alpha, n, m, K, r, iters_info, passed):
     f = open(filename, "w")
-    # Уровень значимости
-    f.write("alpha: {0}\n".format(alpha))
-    # Количество элементов последовательности
-    f.write("n: {0}\n".format(n))
-    # Основание последовательности
-    f.write("m: {0}\n".format(m))
-    # Количество интервалов разбиваемой последовательности
-    f.write("K: {0}\n".format(K))
-    # Количество подпоследовательностей данной последовательности
-    f.write("r: {0}\n".format(r))
-    # Результаты прохождения тестов на каждой подпоследовательности (итерации)
-    f.write("\ni\ttest1\ttest2:\n")
+    f.write("Квантиль уровня (1 - alpha / 2) нормального распределения: {0}\n".format(alpha))
+    f.write("Количество элементов (n): {0}\n".format(n))
+    f.write("Основание последовательности (m): {0}\n".format(m))
+    f.write("Количество интервалов (K): {0}\n".format(K))
+    f.write("Количество подпоследовательностей (r): {0}\n".format(r))
+    f.write("Результат прохождения тестов для каждой подпоследовательности:\n")
+    f.write("i\tTecт 1\tТест 2\n")
     for iter in iters_info:
         f.write("{0}\t{1}\t{2}\n".format(iter[0], iter[1], iter[2]))
-    f.write("\ntest passed: {0}".format(passed))
+    f.write("\nРезульт прохождения теста: {0}".format(passed))
     f.close()
 
 
 # Записать в файл результаты хи-квадрат теста
 def write_chi2_results(filename, precision, alpha, n, m, K, E, v, S, S_alpha, passed):
     f = open(filename, "w")
-    # Уровень значимости
-    f.write("alpha: {0}\n".format(alpha))
-    # Количество элементов последовательности
-    f.write("n: {0}\n".format(n))
-    # Основание последовательности
-    f.write("m: {0}\n".format(m))
-    # Количество интервалов разбиваемой последовательности
-    f.write("K: {0}\n".format(K))
-    # Теоретическая вероятность попадания в интервал
-    f.write("\nE: {0}\n".format(round(E, precision)))
-    # Относительные частоты попадания в интервал
-    f.write("O: {0}\n".format(str(v).strip('[]')))
-    # Значение статистики критерия
-    f.write("\nS: {0}\n".format(round(S, precision)))
-    # Критическое значение 
-    f.write("S_alpha: {0}\n".format(round(S_alpha, precision)))
-    f.write("\ntest passed (S < S_alpha = {0} < {1}): {2}".format(round(S, precision), round(S_alpha, precision), passed))
+    f.write("Квантель хи-квадрат распределения (alpha): {0}\n".format(alpha))
+    f.write("Количество элементов (n): {0}\n".format(n))
+    f.write("Основание последовательности (m): {0}\n".format(m))
+    f.write("Количество интервалов (K): {0}\n".format(K))
+    f.write("Степени свободы (r): {0}\n".format(K - 1))
+    f.write("\nТеоретическая вероятность попадания в интервал (E): {0}\n".format(round(E, precision)))
+    f.write("Относительные частоты попадания в интервал (v): {0}\n".format(str(v).strip('[]')))
+    f.write("\nЗначение статистики критерия (S): {0}\n".format(round(S, precision)))
+    f.write("Критическое значение (S_alpha): {0}\n".format(round(S_alpha, precision)))
+    if passed == True:
+        f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
+    else:
+        f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
+    f.write("\nРезульт прохождения теста: {0}".format(passed))
     f.close()
 
 
 # Записать в файл результаты теста Колмогорова
 def write_kolmogorov_results(filename, precision, alpha, n, m, D, S, S_alpha, passed):
     f = open(filename, "w")
-    # Уровень значимости
-    f.write("alpha: {0}\n".format(alpha))
-    # Количество элементов последовательности
-    f.write("n: {0}\n".format(n))
-    # Основание последовательности
-    f.write("m: {0}\n".format(m))
-    f.write("D: {0}\n".format(round(D, precision)))
-    # Значение статистики критерия
-    f.write("\nS: {0}\n".format(round(S, precision)))
-    # Критическое значение 
-    f.write("S_alpha: {0}\n".format(round(S_alpha, precision)))
-    f.write("\ntest passed (S < S_alpha = {0} < {1}): {2}".format(round(S, precision), round(S_alpha, precision), passed))
+    f.write("Верхние процентные точки (alpha): {0}\n".format(alpha))
+    f.write("Количество элементов (n): {0}\n".format(n))
+    f.write("Основание последовательности (m): {0}\n".format(m))
+    f.write("Разность между накопленными частотами (D): {0}\n".format(round(D, precision)))
+    f.write("\nЗначение статистики критерия (S): {0}\n".format(round(S, precision)))
+    f.write("Критическое значение (S_alpha): {0}\n".format(round(S_alpha, precision)))
+    if passed == True:
+        f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
+    else:
+        f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
+    f.write("\nРезульт прохождения теста: {0}".format(passed))
     f.close()

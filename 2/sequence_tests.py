@@ -90,7 +90,8 @@ def calc_frequencies(x, m, K):
 # Частотный тест
 def frequencies_test(v, n, m, K, alpha):
     # Частоты, для которых доверительный интервал не содержит теоретическую частоту
-    errors = []
+    frequencies_table = []
+    passed = True
     # Квантиль нормального распределения уровня 1 - alpha / 2
     U = st.norm.ppf(1 - alpha / 2)
     for i in range(K):
@@ -99,8 +100,9 @@ def frequencies_test(v, n, m, K, alpha):
         b = v[i] + U / K * math.sqrt(K - 1 / n)
         # Проверка попадания частоты в доверительный интервал
         if not (a <= 1 / K <= b): 
-            errors.append(v[i])
-    return errors == [], errors
+            passed = False
+        frequencies_table.append([i, a, b, v[i], a <= 1 / K <= b])
+    return passed, frequencies_table
 
 
 # Тест оценки сходимости математического ожидания
@@ -131,7 +133,7 @@ def test2(x, m, K, alpha, plot=False, output=True):
     v = calc_frequencies(x, m, K)
     n = len(x) 
     # Результаты частотного теста
-    freq_pass, freq_errs = frequencies_test(v, n, m, K, alpha)
+    freq_pass, freq_table = frequencies_test(v, n, m, K, alpha)
     # Результаты теста оценки сходимости математического ожидания
     MX_pass, MX_a, MX_b, MX_val = MX_estimate_test(MX, DX, n, m, alpha)
     # Результаты теста оценки сходимости дисперсии
@@ -141,7 +143,7 @@ def test2(x, m, K, alpha, plot=False, output=True):
         draw_histogram(TEST2_HISTOGRAM, v, n, m) 
     if output == True:
         ff.write_test2_results(TEST2_RESULT_FILE, PRECISION, alpha, n, m, K, 
-                           v, freq_pass, freq_errs,
+                           v, freq_pass, freq_table,
                            MX, MX_pass, MX_a, MX_b, MX_val, 
                            DX, DX_pass, DX_a, DX_b, DX_val, passed)
     return passed
@@ -174,7 +176,7 @@ def sturgess_method(n):
 
 
 # Тест критерия типа хи-квадрат
-def chi2_test(x, m, alpha, plot=False, output=False):
+def chi2_test(x, m, alpha, plot=False, output=True):
     n = len(x)
     # Получения количества интервалов разбиения
     K = sturgess_method(n)

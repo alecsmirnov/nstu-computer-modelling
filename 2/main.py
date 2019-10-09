@@ -26,9 +26,9 @@ def main():
         result_chi2 = tst.chi2_test(T[:T_len_min], m, *tests_data[3])
         result_kolm = tst.kolmogorov_test(T[:T_len_min], m, *tests_data[4])
         tests_result = [result_1, result_2, result_3, result_chi2, result_kolm]
-        print("Analysis done!\n")
+        print("Тестирование завершено!\n")
     else:
-        print("Period of the generated sequence is less than {0}!\n".format(T_len_min))
+        print("Период сгенерированной последовательности меньше чем {0}!\n".format(T_len_min))
     # Запись результатот тестирования в файлы
     tst.ff.write_analysis_result(ANALYSIS_RESULT_FILENAME, x0, a, b, c, n, m, T_len_min, tests_result)
     tst.ff.write_sequence(SEQUENCE_FILENAME, x)
