@@ -1,0 +1,15 @@
+Sequence with parameters:
+x0: 1
+a: 100
+b: 1
+c: 29
+n: 1000
+m: 1000
+period len: 100
+
+Tests result:
+test 1: True
+test 2: True
+test 3: True
+chi2 test: True
+kolmogorov test: True
