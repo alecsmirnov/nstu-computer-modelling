@@ -96,8 +96,8 @@ def frequencies_test(v, n, m, K, alpha):
     U = st.norm.ppf(1 - alpha / 2)
     for i in range(K):
         # Построение доверительного интервала
-        a = v[i] - U / K * math.sqrt(K - 1 / n) 
-        b = v[i] + U / K * math.sqrt(K - 1 / n)
+        a = v[i] - U / K * math.sqrt((K - 1) / n) 
+        b = v[i] + U / K * math.sqrt((K - 1) / n)
         # Проверка попадания частоты в доверительный интервал
         if not (a <= 1 / K <= b): 
             passed = False

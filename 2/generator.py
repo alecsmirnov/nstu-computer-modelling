@@ -1,7 +1,7 @@
 # Генератор псевдослучайно последовательности
 def generator(x0, a, b, c, n, m):
     x = [x0]
-    for i in range(n):
+    for i in range(n - 1):
         x.append((a * x[i]**2 + b * x[i] + c) % m)
     return x
 
