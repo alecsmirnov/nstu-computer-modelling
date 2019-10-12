@@ -110,9 +110,9 @@ def write_test1_results(filename, precision, alpha, n, Q, a, b, val, passed):
 
 # Записать в файл результаты теста 2
 def write_test2_results(filename, precision, alpha, n, m, K,
-                       v, freq_pass, freq_table, 
-                       MX, MX_pass, MX_a, MX_b, MX_val, 
-                       DX, DX_pass, DX_a, DX_b, DX_val, passed):
+                        v, freq_pass, freq_table, 
+                        MX, MX_pass, MX_a, MX_b, MX_val, 
+                        DX, DX_pass, DX_a, DX_b, DX_val, passed):
     f = open(filename, "w")
     f.write("Квантиль уровня (1 - alpha / 2) нормального распределения: {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))

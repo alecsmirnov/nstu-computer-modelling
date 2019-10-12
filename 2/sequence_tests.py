@@ -145,9 +145,9 @@ def test2(x, m, K, alpha, plot=False, output=True):
         draw_histogram(TEST2_HISTOGRAM, v, n, m) 
     if output == True:
         ff.write_test2_results(TEST2_RESULT_FILE, PRECISION, alpha, n, m, K, 
-                           v, freq_pass, freq_table,
-                           MX, MX_pass, MX_a, MX_b, MX_val, 
-                           DX, DX_pass, DX_a, DX_b, DX_val, passed)
+                               v, freq_pass, freq_table,
+                               MX, MX_pass, MX_a, MX_b, MX_val, 
+                               DX, DX_pass, DX_a, DX_b, DX_val, passed)
     return passed
 
 
