@@ -3,6 +3,8 @@ import scipy.stats as st
 import numpy as np
 import matplotlib.pyplot as plt
 import file_functions as ff
+import scipy.integrate as integrate
+import mpmath as mp
 
 
 # Директории для входных и выходных данных
@@ -187,8 +189,12 @@ def chi2_test(x, m, alpha, plot=False, output=True):
     # Расчёт значения статистики критерия хи-квадрат
     S = n * sum([(O - E)**2 / E for O in v])
     # Критическое значение 
-    S_alpha = st.chi2.isf(alpha, K - 1)
-    passed = S < S_alpha
+    #S_alpha = st.chi2.isf(alpha, K - 1)
+    #passed = S < S_alpha
+    r = K - 1
+    integral_res = integrate.quad(lambda S: S**(r / 2 - 1) * math.exp(-S / 2), S, math.inf)[0]
+    S_alpha = integral_res / (2**(r / 2) * math.gamma(r / 2))
+    passed = alpha < S_alpha
     if plot == True:
         draw_histogram(CHI2_TEST_HISTOGRAM, v, n, m) 
     if output == True:
@@ -207,7 +213,7 @@ def calc_D(x, m):
 # Тест критерия Колмогорова
 def kolmogorov_test(x, m, alpha, output=True):
     # Критические значения при заданных уровнях значимости
-    S_alpha = {0.15: 1.1379, 0.1: 1.2238, 0.05: 1.3581, 0.025: 1.4802, 0.01: 1.6276}
+    #S_alpha = {0.15: 1.1379, 0.1: 1.2238, 0.05: 1.3581, 0.025: 1.4802, 0.01: 1.6276}
     # Расположение наблюдений в порядке возрастания
     sort_x = sorted(x)
     # Масимальнуая разность между накопленными частотами
@@ -215,7 +221,9 @@ def kolmogorov_test(x, m, alpha, output=True):
     n = len(sort_x)
     # Расчёт значения статистики критерия хи-квадрат
     S = (n * D + 1) / math.sqrt(n)
-    passed = S < S_alpha[alpha]
+    #passed = S < S_alpha[alpha]
+    S_alpha = 1 - mp.nsum(lambda k: (-1)**k * math.exp(-2 * k**2 * S**2), [-math.inf,  math.inf])
+    passed = alpha < S_alpha
     if output == True:
-        ff.write_kolmogorov_results(KOLMOGOROV_TEST_RESULT_FILE, PRECISION, alpha, n, m, D, S, S_alpha[alpha], passed)
+        ff.write_kolmogorov_results(KOLMOGOROV_TEST_RESULT_FILE, PRECISION, alpha, n, m, D, S, S_alpha, passed)
     return passed
