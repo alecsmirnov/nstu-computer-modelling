@@ -16,7 +16,7 @@ ANALYSIS_RESULT_FILENAME = tst.OUTPUT_PATH + "analysis_result.txt"
 def main():
     x0, a, b, c, n, m = tst.ff.read_generator_settings(GENERATOR_FILENAME)
     x = gr.generator(x0, a, b, c, n, m)
-    x = [random.randrange(0, m) for x in range(n)]
+    #x = [random.randrange(0, m) for x in range(n)]
     T = gr.period(x)
     T_len_min, tests_data = tst.ff.read_tests_settings(TESTS_FILENAME)
     tests_result = []
