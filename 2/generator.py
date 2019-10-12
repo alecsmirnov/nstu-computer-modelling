@@ -13,7 +13,7 @@ def period(sequence):
     # Проверяем подпоследовательности до середины последовательности
     max_len = len(seq) // 2 + 1
     # Увеличиваем длину подпоследовательности и проверяем на равенство соседнюю за ней
-    for i in range(2, max_len):
+    for i in range(1, max_len):
         if seq[0:i] == seq[i:2*i]:
             return seq[0:i]
     return seq

@@ -16,7 +16,7 @@ ANALYSIS_RESULT_FILENAME = tst.OUTPUT_PATH + "analysis_result.txt"
 def main():
     x0, a, b, c, n, m = tst.ff.read_generator_settings(GENERATOR_FILENAME)
     x = gr.generator(x0, a, b, c, n, m)
-    #x = [random.randrange(0, m) for x in range(n)]
+    x = [random.randrange(0, m) for x in range(n)]
     T = gr.period(x)
     T_len_min, tests_data = tst.ff.read_tests_settings(TESTS_FILENAME)
     tests_result = []
@@ -32,7 +32,7 @@ def main():
     else:
         print("Период сгенерированной последовательности меньше чем {0}!\n".format(T_len_min))
     # Запись результатот тестирования в файлы
-    tst.ff.write_analysis_result(ANALYSIS_RESULT_FILENAME, x0, a, b, c, n, m, T_len_min, tests_result)
+    tst.ff.write_analysis_result(ANALYSIS_RESULT_FILENAME, x0, a, b, c, n, m, len(T), T_len_min, tests_result)
     tst.ff.write_sequence(SEQUENCE_FILENAME, x)
     tst.ff.write_sequence(PERIOD_FILENAME, T)
 

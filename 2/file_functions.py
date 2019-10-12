@@ -34,7 +34,7 @@ def read_tests_settings(filename):
     TESTS_COUNT = 5
     tests_data = [[] for i in range(TESTS_COUNT)]
     # Получаем длину допустимого периода последовательности
-    T_len = int(f.readline())
+    T_len_min = int(f.readline())
     # Данные для теста 1: alpha
     tests_data[0].append(float(f.readline()))
     data_temp = f.readline().split()
@@ -54,7 +54,7 @@ def read_tests_settings(filename):
     # Данные для теста Колмогорова: alpha
     tests_data[4].append(float(f.readline()))
     f.close()
-    return  T_len, tests_data
+    return  T_len_min, tests_data
 
 
 # Записать последовательность в файл
@@ -65,7 +65,7 @@ def write_sequence(filename, seq):
 
 
 # Записать в файл результаты тестирования последовательности
-def write_analysis_result(filename, x0, a, b, c, n, m, T_len, tests_result):
+def write_analysis_result(filename, x0, a, b, c, n, m, T_len, T_len_min, tests_result):
     with open(filename, "w") as f:
         f.write("Последовательность с параметрами:\n")
         f.write("x0: {0}\n".format(x0))
@@ -74,7 +74,8 @@ def write_analysis_result(filename, x0, a, b, c, n, m, T_len, tests_result):
         f.write("c: {0}\n".format(c))
         f.write("n (Длина): {0}\n".format(n))
         f.write("m (Основание): {0}\n".format(n))
-        f.write("len(T) (Длина периода): {0}\n".format(T_len))
+        f.write("T (Длина периода): {0}\n".format(T_len))
+        f.write("Количество испытаний: {0}\n".format(T_len_min))
         if tests_result != []:
             f.write("\nРезультаты тестов:\n")
             f.write("1) Тест 1: {0}\n".format(tests_result[0]))
