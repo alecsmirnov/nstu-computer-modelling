@@ -75,7 +75,7 @@ def write_analysis_result(filename, x0, a, b, c, n, m, T_len, T_len_min, tests_r
         f.write("n (Длина): {0}\n".format(n))
         f.write("m (Основание): {0}\n".format(n))
         f.write("T (Длина периода): {0}\n".format(T_len))
-        f.write("Количество испытаний: {0}\n".format(T_len_min))
+        f.write("\nКоличество испытаний: {0}\n".format(T_len_min))
         if tests_result != []:
             f.write("\nРезультаты тестов:\n")
             f.write("1) Тест 1: {0}\n".format(tests_result[0]))
@@ -179,12 +179,17 @@ def write_chi2_results(filename, precision, alpha, n, m, K, E, v, S, S_alpha, pa
     f.write("Степени свободы (r): {0}\n".format(K - 1))
     f.write("\nТеоретическая вероятность попадания в интервал (E): {0}\n".format(round(E, precision)))
     f.write("Относительные частоты попадания в интервал (v): {0}\n".format(str(v).strip('[]')))
-    f.write("\nЗначение статистики критерия (S): {0}\n".format(round(S, precision)))
-    f.write("Критическое значение (S_alpha): {0}\n".format(round(S_alpha, precision)))
+    #f.write("\nЗначение статистики критерия (S): {0}\n".format(round(S, precision)))
+    #f.write("Критическое значение (S_alpha): {0}\n".format(round(S_alpha, precision)))
+    #if passed == True:
+    #    f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
+    #else:
+    #    f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
+    f.write("\nЗначение P{{S > S*}}: {0}\n".format(round(S_alpha, precision)))
     if passed == True:
-        f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
+        f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(S_alpha, precision), alpha))
     else:
-        f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
+        f.write("Гипотеза отвергается: P{{S > S*}} < alpha = {0} < {1}\n".format(round(S_alpha, precision), alpha))
     f.write("\nРезультат прохождения теста: {0}".format(passed))
     f.close()
 
@@ -196,11 +201,16 @@ def write_kolmogorov_results(filename, precision, alpha, n, m, D, S, S_alpha, pa
     f.write("Количество элементов (n): {0}\n".format(n))
     f.write("Основание последовательности (m): {0}\n".format(m))
     f.write("Разность между накопленными частотами (D): {0}\n".format(round(D, precision)))
-    f.write("\nЗначение статистики критерия (S): {0}\n".format(round(S, precision)))
-    f.write("Критическое значение (S_alpha): {0}\n".format(round(S_alpha, precision)))
+    #f.write("\nЗначение статистики критерия (S): {0}\n".format(round(S, precision)))
+    #f.write("Критическое значение (S_alpha): {0}\n".format(round(S_alpha, precision)))
+    #if passed == True:
+    #    f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
+    #else:
+    #    f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
+    f.write("\nЗначение P{{S > S*}}: {0}\n".format(round(S_alpha, precision)))
     if passed == True:
-        f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
+        f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(S_alpha, precision), alpha))
     else:
-        f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
+        f.write("Гипотеза отвергается: P{{S > S*}} < alpha = {0} < {1}\n".format(round(S_alpha, precision), alpha))
     f.write("\nРезультат прохождения теста: {0}".format(passed))
     f.close()
