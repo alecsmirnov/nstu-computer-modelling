@@ -1,28 +1,9 @@
 import math
 import random
-import numpy as np
 import sympy as sp
 import collections as col
-import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 import file_functions as ff
-
-PRECISION = 3
-
-
-def draw_histogram(picturename, intervals, v, theor_intervals, theor_v):
-    fig = plt.figure()
-    ax = fig.add_subplot()
-    ax.plot(theor_intervals, theor_v)
-    plt.bar(intervals, v, width=1, align="edge", color="yellow")
-    plt.xticks(np.arange(max(intervals) + 2))
-    #title = ""
-    #plt.title(title)
-    #plt.xlabel("")
-    #plt.ylabel("")
-    plt.grid(True)
-    plt.savefig(picturename)
-    plt.clf()
     
 
 def binomial_distribution(m, k, p):
@@ -36,18 +17,22 @@ def r(n, k, p):
 def recurrence_formulas_alg(n, m, p):
     result = []
     operations_count = 8 + 4 * n
-    P0 = binomial_distribution(m, 0, p)
+    P0 = [binomial_distribution(m, 0, p)]
+    M = random.uniform(0, 1)
+    for k in range(0, m + 1):
+        M -= P0[k]
+        P0.append(P0[k] * r(m, k + 1, p))
     for _ in range(n):
         M = random.uniform(0, 1)
         k = 0
-        P = P0
+        P = P0[0]
         while k < m and 0 <= M:
             M -= P
             k += 1
-            P *= r(n, k, p)
+            P *= r(m, k, p)
             operations_count += 9
         result.append(k) 
-    return result, operations_count, [P0]
+    return result, operations_count, P0
 
 
 def poisson_distribution(k, lambd):
@@ -79,7 +64,7 @@ def poisson_alg(n, lambd):
     return result, operations_count, P
 
 
-def chi2_test(sequence, P, alpha, plot=False, output=True):
+def chi2_test(sequence, P, alpha, plot=False, plot_name="chi2_test_histogram.png"):
     n = len(sequence)
     implement_count = 0
     for i in range(len(P)):
@@ -99,8 +84,5 @@ def chi2_test(sequence, P, alpha, plot=False, output=True):
     if plot == True:
         theor_intervals = [i for i in range(max(intervals) + 1)] 
         theor_v = P[:max(intervals) + 1]
-        draw_histogram("chi2_test_histogram.png", intervals, v, theor_intervals, theor_v)
-    if output == True:
-        ff.write_chi2_results("chi2_test_result.txt", PRECISION, sequence, P, alpha, n, 0,0,0, v, 
-                              S_alpha, implement_count, interval_hits, passed)
-    return passed
+        ff.draw_histogram(plot_name, intervals, v, theor_intervals, theor_v)
+    return S_alpha, implement_count, v, interval_hits, passed

@@ -1,15 +1,49 @@
 import sys
+import numpy as np
+import matplotlib.pyplot as plt
 
 
-def write_chi2_results(filename, precision, sequence, P, alpha, n, m, p, lambd, v, S_alpha, 
-                       implement_count, interval_hits, passed):
+def draw_histogram(picturename, intervals, v, theor_intervals, theor_v):
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    ax.plot(theor_intervals, theor_v)
+    plt.bar(intervals, v, width=1, align="edge", color="yellow")
+    plt.xticks(np.arange(max(intervals) + 2))
+    #title = ""
+    #plt.title(title)
+    #plt.xlabel("")
+    #plt.ylabel("")
+    plt.grid(True)
+    plt.savefig(picturename)
+    plt.clf()
+
+
+# Чтение данных для выполняемых тестов
+def read_tests_settings(filename):
+    try:
+        f = open(filename, "r")
+    except IOError:
+        print("Невозможно открыть файл: ", filename)
+        sys.exit()
+    n = int(f.readline())
+    m = int(f.readline())
+    p = float(f.readline())
+    lambd = int(f.readline())
+    alpha = float(f.readline())
+    precision = int(f.readline())
+    f.close()
+    return n, m, p, lambd, alpha, precision
+
+
+def write_chi2_results(filename, precision, sequence, P, alpha, n, m, p, lambd, 
+                       S_alpha, implement_count, v, interval_hits, operations_count, passed):
     f = open(filename, "w")
     f.write("Квантиль хи-квадрат распределения (alpha): {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))
     if m != 0 and p != 0:     
         f.write("Параметры распределения: m = {0}, p = {1}\n".format(m, p))
     if lambd != 0:
-        f.write("Параметры распределения Пуассона (λ): {0}\n".format(lambd))
+        f.write("Параметры распределения Пуассона (lambda): {0}\n".format(lambd))
     f.write("Последовательность: {0}\n".format(sequence))
     f.write("Вероятности: {0}\n".format([round(i, precision) for i in P]))
     f.write("Количество попаданий в интервал: {0}\n".format(dict(interval_hits)))
