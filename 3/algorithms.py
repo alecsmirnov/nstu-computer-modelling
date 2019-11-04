@@ -82,7 +82,8 @@ def chi2_test(sequence, P, alpha, plot=False, plot_name="chi2_test_histogram.png
     # Количество возможных реализаций моделируемой величины
     implement_count = 0
     for i in range(len(P)):
-        if n * P[i] <= 1:
+        #if n * P[i] <= 1:
+        if 100 * P[i] <= 1:
             implement_count += 1
     interval_hits = col.Counter(sequence)
     # Относительные частоты попадания в интервал
