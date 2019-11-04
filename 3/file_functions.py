@@ -55,6 +55,7 @@ def write_chi2_results(filename, precision, sequence, P, alpha, n, m, p, lambd,
     f.write("Количество попаданий в интервал: {0}\n".format(dict(interval_hits)))
     f.write("Относительные частоты попадания в интервал (v): {0}\n".format(str(v).strip('[]')))
     f.write("Степени свободы (r): {0}\n".format(implement_count - 1))
+    f.write("Количество операций: {0}\n".format(operations_count))
 
     f.write("\nЗначение P{{S > S*}}: {0}\n".format(round(S_alpha, precision)))
     if passed == True:
