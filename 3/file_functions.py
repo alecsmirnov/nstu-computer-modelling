@@ -25,16 +25,22 @@ def read_tests_settings(filename):
     except IOError:
         print("Невозможно открыть файл: ", filename)
         sys.exit()
+    # Длина поселдовательности
     n = int(f.readline())
+    # Параметры Биномиального распределения
     m = int(f.readline())
     p = float(f.readline())
+    # Параметр распределения Пуассона
     lambd = int(f.readline())
+    # Уровень значимости
     alpha = float(f.readline())
+    # Точность вычислений
     precision = int(f.readline())
     f.close()
     return n, m, p, lambd, alpha, precision
 
 
+# Запись результатов выполнения теста хи-квадрат
 def write_chi2_results(filename, precision, sequence, P, alpha, n, m, p, lambd, 
                        S_alpha, implement_count, v, interval_hits, operations_count, passed):
     f = open(filename, "w")
