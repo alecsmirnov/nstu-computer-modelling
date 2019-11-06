@@ -24,7 +24,7 @@ def recurrence_formulas_alg(n, m, p):
     P0 = [binomial_distribution(m, 0, p)]
     # Число, содержащееся в интервале m
     M = random.uniform(0, 1)
-    for k in range(0, m + 1):
+    for k in range(0, m):
         M -= P0[k]
         P0.append(P0[k] * r(m, k + 1, p))
     # Генерация чисел, принадлежащих распределению и попаданию в интервал из m
