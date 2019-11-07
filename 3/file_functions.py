@@ -41,7 +41,7 @@ def read_tests_settings(filename):
 
 # Запись результатов выполнения теста хи-квадрат
 def write_chi2_results(filename, precision, sequence, P, alpha, n, m, p, lambd, 
-                       S_alpha, implement_count, v, interval_hits, operations_count, passed):
+                       S, S_alpha, implement_count, v, interval_hits, operations_count, passed):
     f = open(filename, "w")
     f.write("Квантиль хи-квадрат распределения (alpha): {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))
@@ -49,14 +49,15 @@ def write_chi2_results(filename, precision, sequence, P, alpha, n, m, p, lambd,
         f.write("Параметры распределения: m = {0}, p = {1}\n".format(m, p))
     if lambd != 0:
         f.write("Параметры распределения Пуассона (lambda): {0}\n".format(lambd))
-    f.write("Последовательность: {0}\n".format(sequence))
+    f.write("\nПоследовательность: {0}\n".format(sequence))
     f.write("Вероятности: {0}\n".format([round(i, precision) for i in P]))
     f.write("Сумма вероятностей: {0}\n".format(round(sum(P), precision)))
     f.write("Количество попаданий в интервал: {0}\n".format(dict(interval_hits)))
     f.write("Относительные частоты попадания в интервал (v): {0}\n".format(str(v).strip('[]')))
-    f.write("Степени свободы (r): {0}\n".format(implement_count - 1))
-    f.write("Количество операций: {0}\n".format(operations_count))
-    f.write("\nЗначение P{{S > S*}}: {0}\n".format(round(S_alpha, precision)))
+    f.write("\nКоличество операций: {0}\n".format(operations_count))
+    f.write("\nСтепени свободы (r): {0}\n".format(implement_count - 1))
+    f.write("Значение S: {0}\n".format(round(S, precision)))
+    f.write("Значение P{{S > S*}}: {0}\n".format(round(S_alpha, precision)))
     if passed == True:
         f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(S_alpha, precision), alpha))
     else:

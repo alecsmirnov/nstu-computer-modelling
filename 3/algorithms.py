@@ -16,7 +16,7 @@ def r(m, k, p):
 
 
 # Стандартный алгоритм с рекуррентными формулами
-def recurrence_formulas_alg(n, m, p):
+def recurrence_formula(n, m, p):
     result = []
     # Количество операций
     operations_count = 8 + 4 * n
@@ -47,7 +47,7 @@ def poisson_distribution(k, lambd):
 
 
 # Нестандартный алгоритм для распределения Пуассона
-def poisson_alg(n, lambd):
+def poisson(n, lambd):
     result = []
     # Параметр рапсределения Пуассона
     L = int(lambd) 
@@ -101,4 +101,4 @@ def chi2_test(sequence, P, m, alpha, plot=False, plot_name="chi2_test_histogram.
         theor_intervals = [i for i in range(max(intervals) + 1)] 
         theor_v = P[:max(intervals) + 1]
         ff.draw_histogram(plot_name, intervals, v, theor_intervals, theor_v)
-    return S_alpha, v, interval_hits, passed
+    return S, S_alpha, v, interval_hits, passed
