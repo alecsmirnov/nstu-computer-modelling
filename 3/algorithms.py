@@ -1,6 +1,7 @@
 import math
 import random
 import sympy as sp
+import scipy.stats as st
 import collections as col
 import scipy.integrate as integrate
 import file_functions as ff
@@ -95,10 +96,12 @@ def chi2_test(sequence, P, m, alpha, plot=False, plot_name="chi2_test_histogram.
     S = n * sum((interval_hits[i] / n - P[i])**2 / P[i] for i in range(m + 1))
     r = m - 1
     integral_res = integrate.quad(lambda S: S**(r / 2 - 1) * math.exp(-S / 2), S, math.inf)[0]
-    S_alpha = integral_res / (2**(r / 2) * math.gamma(r / 2))
-    passed = alpha < S_alpha
-    if plot == True:
+    PSS = integral_res / (2**(r / 2) * math.gamma(r / 2))
+    PSS_passed = alpha < PSS
+    S_alpha = st.chi2.isf(alpha, r)
+    S_alpha_passed = S < S_alpha
+    if plot:
         theor_intervals = [i for i in range(max(intervals) + 1)] 
         theor_v = P[:max(intervals) + 1]
         ff.draw_histogram(plot_name, intervals, v, theor_intervals, theor_v)
-    return S, S_alpha, v, interval_hits, passed
+    return S, S_alpha, PSS, v, interval_hits, S_alpha_passed, PSS_passed
