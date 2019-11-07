@@ -2,17 +2,16 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Отсутствие параметра для вывода результата
+NONE = 0
+
 
 def draw_histogram(picturename, intervals, v, theor_intervals, theor_v):
-    fig = plt.figure()
-    ax = fig.add_subplot()
-    ax.plot(theor_intervals, theor_v)
-    plt.bar(intervals, v, width=1, align="edge", color="yellow")
+    plt.xlabel("Количество интервалов")
+    plt.ylabel("Частоты")
     plt.xticks(np.arange(max(intervals) + 2))
-    #title = ""
-    #plt.title(title)
-    #plt.xlabel("")
-    #plt.ylabel("")
+    plt.plot(theor_intervals, theor_v, marker="o")
+    plt.bar(intervals, v, width=1, align="center", edgecolor="grey", color="lightgrey")
     plt.grid(True)
     plt.savefig(picturename)
     plt.clf()
@@ -23,7 +22,7 @@ def read_tests_settings(filename):
     try:
         f = open(filename, "r")
     except IOError:
-        print("Невозможно открыть файл: ", filename)
+        print("Невозможно открыть файл: {0}".format(filename))
         sys.exit()
     # Длина поселдовательности
     n = int(f.readline())
@@ -52,11 +51,11 @@ def write_chi2_results(filename, precision, sequence, P, alpha, n, m, p, lambd,
         f.write("Параметры распределения Пуассона (lambda): {0}\n".format(lambd))
     f.write("Последовательность: {0}\n".format(sequence))
     f.write("Вероятности: {0}\n".format([round(i, precision) for i in P]))
+    f.write("Сумма вероятностей: {0}\n".format(round(sum(P), precision)))
     f.write("Количество попаданий в интервал: {0}\n".format(dict(interval_hits)))
     f.write("Относительные частоты попадания в интервал (v): {0}\n".format(str(v).strip('[]')))
     f.write("Степени свободы (r): {0}\n".format(implement_count - 1))
     f.write("Количество операций: {0}\n".format(operations_count))
-
     f.write("\nЗначение P{{S > S*}}: {0}\n".format(round(S_alpha, precision)))
     if passed == True:
         f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(S_alpha, precision), alpha))
