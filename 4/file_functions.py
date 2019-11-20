@@ -8,13 +8,14 @@ def str_to_bool(str):
 
 
 def draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width):
-    plt.xlabel("Количество интервалов")
+    plt.xlabel("Интервалы")
     plt.ylabel("Частоты")
-    plt.xticks(intervals)
+    plt.xticks(intervals, rotation=90)
     plt.plot(theor_intervals, theor_v, marker="o")
     plt.bar(intervals[:len(intervals) - 1], v, width=bar_width, alpha=0.5, 
             align="edge", edgecolor="grey", color="lightgrey")
     plt.grid(True)
+    plt.tight_layout()
     plt.savefig(picturename)
     plt.clf()
 
@@ -62,7 +63,7 @@ def write_tests_results(filename, precision, sigm, alpha, sequence, intervals, h
                         chi2_S, chi2_PSS, chi2_passed, ad_S, ad_PSS, ad_passed):
     n = len(sequence)
     f = open(filename, "w")
-    f.write("Квантиль хи-квадрат распределения (alpha): {0}\n".format(alpha))
+    f.write("Квантиль распределения (alpha): {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))
     f.write("Параметры распределения (sigma): {0}\n".format(sigm))
     f.write("\nПоследовательность: {0}\n".format([round(i, precision) for i in sequence]))
