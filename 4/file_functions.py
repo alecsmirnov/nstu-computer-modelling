@@ -19,21 +19,19 @@ def draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_widt
     plt.clf()
 
 
-def draw_charts(density_func, distribution_func, *arg):
-    x = np.arange(0.0, 10.01, 0.01) 
-    plt.title("Функция плотности распределения")
-    plt.xlabel("x") 
-    plt.ylabel("f(x)")
-    y = [density_func(x, *arg) for x in x]
+def draw_chart(picturename, title, x_label, y_label, func, *arg):
+    X_MAX = 10
+    X_STEP = 0.01
+    x = np.arange(0, X_MAX + X_STEP, X_STEP) 
+    plt.xticks(range(0, X_MAX + 1))
+    plt.title(title)
+    plt.xlabel(x_label) 
+    plt.ylabel(y_label)
+    y = [func(x, *arg) for x in x]
     plt.plot(x, y)
-    plt.show()
-    plt.title("Функция распределения")
-    plt.xlabel("x")
-    plt.ylabel("F(x)")
-    y = [distribution_func(x, *arg) for x in x]
-    plt.plot(x, y) 
-    plt.show()
     plt.grid(True)
+    plt.savefig(picturename)
+    plt.clf()
 
 
 # Чтение данных для выполняемых тестов
@@ -45,44 +43,46 @@ def read_tests_settings(filename):
         sys.exit()
     # Длина поселдовательности
     n = int(f.readline())
+    # Параметр распределения
     sigm = float(f.readline())
     # Уровень значимости
     alpha = float(f.readline())
     # Точность вычислений
     precision = int(f.readline())
+    # Отрисовка гистограммы
     histogram_run = str_to_bool(f.readline().rstrip('\n'))
+    # Отрисовка графиков функции
     charts_run = str_to_bool(f.readline().rstrip('\n'))
     f.close()
     return n, sigm, alpha, precision, histogram_run, charts_run
 
 
-# Запись результатов выполнения теста хи-квадрат
-def write_chi2_results(filename, precision, sequence, P, alpha, n, m, p, lambd, 
-                       S, S_alpha, PSS, implement_count, v, interval_hits, operations_count, S_alpha_passed, PSS_passed):
+# Запись результатов выполнения тестов (Хи-квадрат и Андерса-Дарлинга)
+def write_tests_results(filename, precision, sigm, alpha, sequence, intervals, hits, modeling_time,
+                        chi2_S, chi2_PSS, chi2_passed, ad_S, ad_PSS, ad_passed):
+    n = len(sequence)
     f = open(filename, "w")
     f.write("Квантиль хи-квадрат распределения (alpha): {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))
-    if m != 0 and p != 0:     
-        f.write("Параметры распределения: m = {0}, p = {1}\n".format(m, p))
-    if lambd != 0:
-        f.write("Параметры распределения Пуассона (lambda): {0}\n".format(lambd))
-    f.write("\nПоследовательность: {0}\n".format(sequence))
-    f.write("Вероятности: {0}\n".format([round(i, precision) for i in P]))
-    f.write("Сумма вероятностей: {0}\n".format(round(sum(P), precision)))
-    f.write("Количество попаданий в интервал: {0}\n".format(dict(interval_hits)))
-    f.write("Относительные частоты попадания в интервал (v): {0}\n".format(str(v).strip('[]')))
-    f.write("\nКоличество операций: {0}\n".format(operations_count))
-    f.write("\nЗначение S_alpha: {0}\n".format(round(S_alpha, precision)))
-    if S_alpha_passed == True:
-        f.write("Гипотеза не отвергается: S_alpha > alpha = {0} > {1}\n".format(round(S_alpha, precision), alpha))
+    f.write("Параметры распределения (sigma): {0}\n".format(sigm))
+    f.write("\nПоследовательность: {0}\n".format([round(i, precision) for i in sequence]))
+    f.write("Интервалы: {0}\n".format([round(i, precision) for i in intervals]))
+    f.write("Попадания в интервалы: {0}\n".format([round(i, precision) for i in hits]))
+    f.write("\nВремя моделирования последовательности (sec): {0}\n".format(round(modeling_time, precision)))
+    f.write("\nПроверка гипотезы по критерию Хи-квадрат\n")
+    f.write("Значение S: {0}\n".format(round(chi2_S, precision)))
+    f.write("Значение P{{S > S*}}: {0}\n".format(round(chi2_PSS, precision)))
+    if chi2_passed == True:
+        f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(chi2_PSS, precision), alpha))
     else:
-        f.write("Гипотеза отвергается: S_alpha < alpha = {0} < {1}\n".format(round(S_alpha, precision), alpha))
-    f.write("\nСтепени свободы (r): {0}\n".format(implement_count - 1))
-    f.write("Значение S: {0}\n".format(round(S, precision)))
-    f.write("Значение P{{S > S*}}: {0}\n".format(round(PSS, precision)))
-    if PSS_passed == True:
-        f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(PSS, precision), alpha))
+        f.write("Гипотеза отвергается: P{{S > S*}} < alpha = {0} < {1}\n".format(round(chi2_PSS, precision), alpha))
+    f.write("Результат прохождения теста: {0}\n".format(chi2_passed))
+    f.write("\nПроверка гипотезы по критерию Омера-квадрат Андерсона-Дарлинга\n")
+    f.write("Значение S: {0}\n".format(round(ad_S, precision)))
+    f.write("Значение P{{S > S*}}: {0}\n".format(round(ad_PSS, precision)))
+    if ad_passed == True:
+        f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(ad_PSS, precision), alpha))
     else:
-        f.write("Гипотеза отвергается: P{{S > S*}} < alpha = {0} < {1}\n".format(round(PSS, precision), alpha))
-    f.write("\nРезультат прохождения теста: {0}".format(PSS_passed and S_alpha_passed))
+        f.write("Гипотеза отвергается: P{{S > S*}} < alpha = {0} < {1}\n".format(round(ad_PSS, precision), alpha))
+    f.write("Результат прохождения теста: {0}".format(ad_passed))
     f.close()

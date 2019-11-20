@@ -1,27 +1,34 @@
 import math
 import random
+import time
 import scipy
 import scipy.stats as stats
 import scipy.integrate as integrate
 import file_functions as ff
 
 
+# Функция плотности распределения Рэлея
 def rayleigh_density(x, sigm):
     return x / sigm**2 * scipy.exp(-x**2 / (2 * sigm**2))
 
 
+# Функция распределения Рэлея
 def rayleigh_distribution(x, sigm):
     return 1 - scipy.exp(-x**2 / (2 * sigm**2))
 
 
+# Обратная функция Рэлея
 def rayleigh_inverse(y, sigm):
     return sigm * math.sqrt(-2 * scipy.log(1 - y))
 
 
+# Генерация последовательности и подсчёт времени
 def make_sequence(n, sigm):
-    return [rayleigh_inverse(random.uniform(0, 1), sigm) for _ in range(n)]
+    start_time = time.time()
+    return [rayleigh_inverse(random.uniform(0, 1), sigm) for _ in range(n)], time.time() - start_time
 
 
+# Разбиение последовательности на интервалы
 def get_intervals(sequence):
     k = int(5 * scipy.log10(len(sequence)))
     interval_width = max(sequence) / k
@@ -29,6 +36,7 @@ def get_intervals(sequence):
     return intervals
 
 
+# Расчёт попаданий элементов последовательности в интервалы
 def interval_hits(sequence, intervals):
     hits = [] 
     v = []
@@ -39,6 +47,7 @@ def interval_hits(sequence, intervals):
     return hits, v
 
 
+# Сформировать гистограмму теоретической и эмпирической функции плотности распределения
 def make_histogram(picturename, intervals, v, sigm):
     theor_intervals = []
     theor_v = []
@@ -49,6 +58,13 @@ def make_histogram(picturename, intervals, v, sigm):
     ff.draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width)
 
 
+# Сформировать график функции
+def make_charts(density_name, distribution_name, *arg):
+    ff.draw_chart(density_name, "Функция плотности распределения", "x", "f(x)", rayleigh_density, *arg)
+    ff.draw_chart(distribution_name, "Функция распределения", "x", "F(x)", rayleigh_distribution, *arg)
+
+
+# Тест критерия типа Хи-квадрат
 def chi2_test(sequence, intervals, hits, sigm, alpha):
     n = len(sequence)
     intervals_p = [rayleigh_distribution(x, sigm) - rayleigh_distribution(y, sigm) 
@@ -57,8 +73,8 @@ def chi2_test(sequence, intervals, hits, sigm, alpha):
     r = len(intervals) - 1
     integral_res = integrate.quad(lambda S: S**(r / 2 - 1) * math.exp(-S / 2), S, math.inf)[0]
     PSS = integral_res / (2**(r / 2) * math.gamma(r / 2))
-    PSS_passed = alpha < PSS
-    return S, PSS, PSS_passed
+    passed = alpha < PSS
+    return S, PSS, passed
 
 
 def F(x, tetta):
@@ -83,6 +99,7 @@ def a2(S):
     return result 
 
 
+# Тест критерия типа Омега-квадрат Андерса-Дарлинга
 def anderson_darling_test(sequence, sigm, alpha):
     sort_sequence = sorted(sequence)
     S = 0 
@@ -93,5 +110,5 @@ def anderson_darling_test(sequence, sigm, alpha):
         S += arg * math.log(Fi) + (1 - arg) * math.log(1 - Fi)
     S = -n - 2 * S
     PSS = 1 - a2(S) 
-    PSS_passed = alpha < PSS
-    return S, PSS, PSS_passed
+    passed = alpha < PSS
+    return S, PSS, passed
