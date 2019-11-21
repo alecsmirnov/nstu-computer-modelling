@@ -74,7 +74,7 @@ def chi2_test(sequence, intervals, hits, sigm, alpha):
     integral_res = integrate.quad(lambda S: S**(r / 2 - 1) * math.exp(-S / 2), S, math.inf)[0]
     PSS = integral_res / (2**(r / 2) * math.gamma(r / 2))
     passed = alpha < PSS
-    return S, PSS, passed
+    return r, S, PSS, passed
 
 
 def F(x, tetta):

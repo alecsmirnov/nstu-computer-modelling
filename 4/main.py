@@ -25,11 +25,11 @@ def main():
     intervals = alg.get_intervals(sequence)
     hits, v = alg.interval_hits(sequence, intervals)
     # Тест критерия типа Хи-квадрат
-    chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(sequence, intervals, hits, sigm, alpha)
+    chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(sequence, intervals, hits, sigm, alpha)
     # Тест критерия типа Омега-квадрат Андерса-Дарлинга
     ad_S, ad_PSS, ad_passed = alg.anderson_darling_test(sequence, sigm, alpha)
     ff.write_tests_results(TESTS_RESULT, precision, sigm, alpha, sequence, intervals, hits, modeling_time,
-                           chi2_S, chi2_PSS, chi2_passed, ad_S, ad_PSS, ad_passed)
+                           chi2_r, chi2_S, chi2_PSS, chi2_passed, ad_S, ad_PSS, ad_passed)
     if histogram_run:
         alg.make_histogram(HISTOGRAM, intervals, v, sigm)
     if charts_run:

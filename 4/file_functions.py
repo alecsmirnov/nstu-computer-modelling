@@ -60,7 +60,7 @@ def read_tests_settings(filename):
 
 # Запись результатов выполнения тестов (Хи-квадрат и Андерса-Дарлинга)
 def write_tests_results(filename, precision, sigm, alpha, sequence, intervals, hits, modeling_time,
-                        chi2_S, chi2_PSS, chi2_passed, ad_S, ad_PSS, ad_passed):
+                        chi2_r, chi2_S, chi2_PSS, chi2_passed, ad_S, ad_PSS, ad_passed):
     n = len(sequence)
     f = open(filename, "w")
     f.write("Квантиль распределения (alpha): {0}\n".format(alpha))
@@ -71,6 +71,7 @@ def write_tests_results(filename, precision, sigm, alpha, sequence, intervals, h
     f.write("Попадания в интервалы: {0}\n".format([round(i, precision) for i in hits]))
     f.write("\nВремя моделирования последовательности (sec): {0}\n".format(round(modeling_time, precision)))
     f.write("\nПроверка гипотезы по критерию Хи-квадрат\n")
+    f.write("Значение r: {0}\n".format(round(chi2_r, precision)))
     f.write("Значение S: {0}\n".format(round(chi2_S, precision)))
     f.write("Значение P{{S > S*}}: {0}\n".format(round(chi2_PSS, precision)))
     if chi2_passed == True:
@@ -78,7 +79,7 @@ def write_tests_results(filename, precision, sigm, alpha, sequence, intervals, h
     else:
         f.write("Гипотеза отвергается: P{{S > S*}} < alpha = {0} < {1}\n".format(round(chi2_PSS, precision), alpha))
     f.write("Результат прохождения теста: {0}\n".format(chi2_passed))
-    f.write("\nПроверка гипотезы по критерию Омера-квадрат Андерсона-Дарлинга\n")
+    f.write("\nПроверка гипотезы по критерию Омега-квадрат Андерсона-Дарлинга\n")
     f.write("Значение S: {0}\n".format(round(ad_S, precision)))
     f.write("Значение P{{S > S*}}: {0}\n".format(round(ad_PSS, precision)))
     if ad_passed == True:
