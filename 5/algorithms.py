@@ -18,9 +18,9 @@ def moyal_distribution(x, mu, sigm):
 
 
 def frange(x, y, jump):
-  while x < y:
-    yield x
-    x += jump
+    while x < y:
+        yield x
+        x += jump
 
 
 # Метод исключений (Неймана)
