@@ -23,6 +23,7 @@ def frange(x, y, jump):
     x += jump
 
 
+# Метод исключений (Неймана)
 def neumann_method(a, b, mu, sigm):
     max_density = max([moyal_density(x, mu, sigm) for x in frange(a, b, (b - a) / 100)])
     x0 = a + random.uniform(0, 1) * (b - a) 
@@ -60,8 +61,6 @@ def get_bounds(mu, sigm):
 # Разбиение последовательности на интервалы
 def get_intervals(sequence):
     k = int(5 * scipy.log10(len(sequence)))
-    #intervals_width = max(sequence) / k
-    #intervals = [x * intervals_width for x in range(0, k + 1)] 
     intervals_width = (max(sequence) - min(sequence)) / k
     intervals = [x * intervals_width + min(sequence) for x in range(0, k + 1)] 
     return intervals, intervals_width
@@ -85,12 +84,13 @@ def make_histogram(picturename, intervals, intervals_width, v, mu, sigm):
     ff.draw_histogram(picturename, intervals, v, theor_intervals, theor_v, intervals_width)
 
 
+# Сформировать график функции
 def make_charts(density_name, distribution_name, a, b, mu, sigm):
     ff.draw_chart(density_name, "Функция плотности распределения Мояла", "x", "f(x)", a, b, moyal_density, mu, sigm)
     ff.draw_chart(distribution_name, "Функция распределения Мояла", "x", "F(x)", a, b, moyal_distribution, mu, sigm)
 
 
-# Тест критерия типа Хи-квадрат
+# Тест критерия Хи-квадрат
 def chi2_test(sequence, intervals, hits, mu, sigm, alpha):
     n = len(sequence)
     intervals_p = [moyal_distribution(x, mu, sigm) - moyal_distribution(y, mu, sigm) 
@@ -111,6 +111,7 @@ def calc_D(sequence, mu, sigm):
     return max(D_plus, D_minus)
 
 
+# Тест критерия Смирнова
 def smirnov_test(sequence, mu, sigm, alpha):
     sort_seq = sorted(sequence)
     n = len(sort_seq)
