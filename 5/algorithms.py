@@ -48,7 +48,7 @@ def make_sequence(n, a, b, mu, sigm):
         density.append(max_density)
         count += n
     modeling_time = time.time() - start_time
-    return sequence, max(density), count, modeling_time
+    return sequence, max_density, count, modeling_time
 
 
 # Определить границы интервала

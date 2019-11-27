@@ -28,7 +28,7 @@ def main():
     # Тест критерия Хи-квадрат
     chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(sequence, intervals, hits, mu, sigm, alpha)
     # Тест критерия Смирнова
-    sm_S, sm_PSS, sm_passed = alg.smirnov_test2(sequence, mu, sigm, alpha)
+    sm_S, sm_PSS, sm_passed = alg.smirnov_test(sequence, mu, sigm, alpha)
     ff.write_tests_results(TESTS_RESULT, precision, mu, sigm, alpha, a, b, sequence, density, count, 
                            intervals, hits, modeling_time,
                            chi2_r, chi2_S, chi2_PSS, chi2_passed, sm_S, sm_PSS, sm_passed)
