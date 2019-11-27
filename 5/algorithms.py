@@ -53,8 +53,8 @@ def make_sequence(n, a, b, mu, sigm):
 
 # Определить границы интервала
 def get_bounds(mu, sigm):
-    a = scipy.stats.norm.ppf(0.01, loc=mu, scale=sigm)
-    b = scipy.stats.norm.ppf(0.99, loc=mu, scale=sigm)
+    a = scipy.stats.moyal.ppf(0.01, loc=mu, scale=sigm)
+    b = scipy.stats.moyal.ppf(0.99, loc=mu, scale=sigm)
     return a, b
 
 
