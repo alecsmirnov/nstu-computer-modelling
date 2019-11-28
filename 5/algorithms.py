@@ -4,6 +4,7 @@ import time
 import scipy
 import scipy.stats as stats
 import scipy.integrate as integrate
+import numpy as np
 import file_functions as ff
 
 
@@ -14,18 +15,12 @@ def moyal_density(x, mu, sigm):
 
 # Функция распределения Мояла
 def moyal_distribution(x, mu, sigm):
-    return -math.erf(math.exp((mu - x) / (2 * sigm)) / math.sqrt(2))
-
-
-def frange(x, y, jump):
-    while x < y:
-        yield x
-        x += jump
+    return 1 - math.erf(math.exp((mu - x) / (2 * sigm)) / math.sqrt(2))
 
 
 # Метод исключений (Неймана)
 def neumann_method(a, b, mu, sigm):
-    max_density = max([moyal_density(x, mu, sigm) for x in frange(a, b, (b - a) / 100)])
+    max_density = max([moyal_density(x, mu, sigm) for x in np.arange(a, b, (b - a) / 100)])
     x0 = a + random.uniform(0, 1) * (b - a) 
     y0 = random.uniform(0, 1) * max_density
     n = 2 
