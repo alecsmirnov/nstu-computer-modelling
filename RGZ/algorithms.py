@@ -26,9 +26,9 @@ def fisher_distribution(mu, nu):
 
 
 # Генерация последовательности и подсчёт времени
-def make_sequence(n, distribution, *arg):
+def make_sequence(n, distribution, *args):
     start_time = time()
-    sequence = [distribution(*arg) for _ in range(n)]
+    sequence = [distribution(*args) for _ in range(n)]
     modeling_time = time() - start_time
     return sequence, modeling_time
 
@@ -53,25 +53,25 @@ def interval_hits(sequence, intervals):
 
 
 # Сформировать гистограмму теоретической и эмпирической функции плотности распределения
-def make_histogram(picturename, intervals, v, theor_distributuon, *arg):
+def make_histogram(picturename, intervals, v, theor_distributuon, *args):
     theor_intervals = []
     theor_v = []
     bar_width = intervals[-1] / (len(intervals) - 1)
     for i in range(len(intervals)):
         theor_intervals.append(i * bar_width + bar_width / 2)
-        theor_v.append(theor_distributuon((i + 1) * bar_width, *arg) - theor_distributuon(i * bar_width, *arg))
+        theor_v.append(theor_distributuon((i + 1) * bar_width, *args) - theor_distributuon(i * bar_width, *args))
     ff.draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width)
 
 
 # Сформировать график функции
-def make_chart(picturename, theor_distributuon, *arg):
-    ff.draw_chart(picturename, "Функция распределения Фишера", "x", "F(x)", theor_distributuon, *arg)
+def make_chart(picturename, theor_distributuon, *args):
+    ff.draw_chart(picturename, "Функция распределения Фишера", "x", "F(x)", theor_distributuon, *args)
 
 
 # Тест критерия Хи-квадрат
-def chi2_test(sequence, intervals, hits, alpha, theor_distributuon, *arg):
+def chi2_test(sequence, intervals, hits, alpha, theor_distributuon, *args):
     n = len(sequence)
-    intervals_p = [theor_distributuon(x, *arg) - theor_distributuon(y, *arg) for x, y in zip(intervals[1:], intervals[:-1])]
+    intervals_p = [theor_distributuon(x, *args) - theor_distributuon(y, *args) for x, y in zip(intervals[1:], intervals[:-1])]
     S = n * sum((hit / n - p)**2 / p if p else 0 for hit, p in zip(hits, intervals_p))
     r = len(intervals) - 1
     integral_res = quad(lambda S: S**(r / 2 - 1) * exp(-S / 2), S, inf)[0]
@@ -96,10 +96,10 @@ def a1(S):
 
 
 # Тест критерия Крамера-Мизеса-Смирнов
-def cms_test(sequence, alpha, theor_distributuon, *arg):
+def cms_test(sequence, alpha, theor_distributuon, *args):
     sorted_seq = sorted(sequence)
     n = len(sorted_seq)
-    S = 1 / (12 * n) + sum((theor_distributuon(sorted_seq[i], *arg) - (2 * i - 1) / (2 * n))**2 for i in range(n))
+    S = 1 / (12 * n) + sum((theor_distributuon(sorted_seq[i], *args) - (2 * i - 1) / (2 * n))**2 for i in range(n))
     PSS = 1 - a1(S) 
     passed = alpha < PSS
     return S, PSS, passed

@@ -7,7 +7,7 @@ def str_to_bool(str):
     return True if str == "True" else False
 
 
-def draw_chart(picturename, title, x_label, y_label, func, *arg):
+def draw_chart(picturename, title, x_label, y_label, func, *args):
     X_MAX = 10
     X_STEP = 0.05
     x = arange(0, X_MAX + X_STEP, X_STEP) 
@@ -15,7 +15,7 @@ def draw_chart(picturename, title, x_label, y_label, func, *arg):
     plt.title(title)
     plt.xlabel(x_label) 
     plt.ylabel(y_label)
-    y = [func(x, *arg) for x in x]
+    y = [func(x, *args) for x in x]
     plt.plot(x, y)
     plt.grid(True)
     plt.savefig(picturename)
