@@ -1,13 +1,10 @@
-import random
-import math
+import algorithms as alg
 
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-import scipy
 import scipy.stats as stats
-import scipy.integrate as integrate
 
 
 def draw_chart(picturename, title, x_label, y_label, func, *arg):
@@ -25,44 +22,6 @@ def draw_chart(picturename, title, x_label, y_label, func, *arg):
     plt.clf()
 
 
-def muller_method():
-    p1, p2 = random.uniform(0, 1), random.uniform(0, 1)
-    eps1 = math.sqrt(-2 * math.log(p1)) * math.cos(2 * math.pi * p2)
-    eps2 = math.sqrt(-2 * math.log(p2)) * math.sin(2 * math.pi * p1)
-    return eps1, eps2
-
-
-def chi2_distribution(k):
-    return sum(val**2 for sub in (muller_method() for _ in range(k)) for val in sub)
-
-
-def fisher_distribution(mu, nu):
-    return chi2_distribution(mu) * nu / (chi2_distribution(nu) * mu)
-
-
-def generate_sequence(n, mu, nu):
-    return [fisher_distribution(mu, nu) for _ in range(n)]
-
-
-# Разбиение последовательности на интервалы
-def get_intervals(sequence):
-    k = int(5 * scipy.log10(len(sequence)))
-    interval_width = max(sequence) / k
-    intervals = [x * interval_width for x in range(0, k + 1)] 
-    return intervals
-
-
-# Расчёт попаданий элементов последовательности в интервалы
-def interval_hits(sequence, intervals):
-    hits = [] 
-    v = []
-    for a, b in zip(intervals[:-1], intervals[1:]):
-        hit = sum([a <= elem < b for elem in sequence])
-        hits.append(hit)
-        v.append(hit / len(sequence))
-    return hits, v
-
-
 def draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width):
     plt.xlabel("Интервалы")
     plt.ylabel("Частоты")
@@ -73,7 +32,7 @@ def draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_widt
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(picturename)
-    plt.clf()
+    plt.clf()   
 
 
 # Сформировать гистограмму теоретической и эмпирической функции плотности распределения
@@ -87,33 +46,20 @@ def make_histogram(picturename, intervals, v, mu, nu):
     draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width)
 
 
-# Тест критерия Хи-квадрат
-def chi2_test(sequence, intervals, hits, mu, nu, alpha):
-    n = len(sequence)
-    intervals_p = [stats.f.cdf(x, mu, nu) - stats.f.cdf(y, mu, nu) 
-                   for x, y in zip(intervals[1:], intervals[:-1])]
-    S = n * sum((hit / n - p)**2 / p if p else 0 for hit, p in zip(hits, intervals_p))
-    r = len(intervals) - 1
-    integral_res = integrate.quad(lambda S: S**(r / 2 - 1) * math.exp(-S / 2), S, math.inf)[0]
-    PSS = integral_res / (2**(r / 2) * math.gamma(r / 2))
-    passed = alpha < PSS
-    return r, S, PSS, passed
-
 
 def main():
     alpha = 0.05
-    n = 50
+    n = 1000
     mu = 4
     nu = 2
-    sequence = generate_sequence(n, mu, nu)
-    intervals = get_intervals(sequence)
-    hits, v = interval_hits(sequence, intervals)
+    sequence, modeling_time = alg.make_sequence(n, mu, nu)
+    intervals = alg.get_intervals(sequence)
+    hits, v = alg.interval_hits(sequence, intervals)
     make_histogram("hist.png", intervals, v, mu, nu)
-    r, S, PSS, passed = chi2_test(sequence, intervals, hits, mu, nu, alpha)
-    print(r)
-    print(S)
-    print(PSS)
-    print(passed)
+    r, S, PSS, passed = alg.chi2_test(sequence, intervals, hits, mu, nu, alpha)
+    print(r, S, PSS, passed)
+    S, PSS, passed = alg.cms_test(sequence, mu, v, alpha)
+    print(S, PSS, passed)
 
 
 if __name__ == "__main__":
