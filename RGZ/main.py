@@ -1,65 +1,40 @@
 import algorithms as alg
-
-import sys
-import numpy as np
-import matplotlib.pyplot as plt
-
-import scipy.stats as stats
+import file_functions as ff
 
 
-def draw_chart(picturename, title, x_label, y_label, func, *arg):
-    X_MAX = 10
-    X_STEP = 0.005
-    x = np.arange(0, X_MAX + X_STEP, X_STEP) 
-    plt.xticks(range(0, X_MAX + 1))
-    plt.title(title)
-    plt.xlabel(x_label) 
-    plt.ylabel(y_label)
-    y = [func(x, *arg) for x in x]
-    plt.plot(x, y)
-    plt.grid(True)
-    plt.savefig(picturename)
-    plt.clf()
+INPUT_PATH  = "input/"
+OUTPUT_PATH = "output/"
 
+# Названия файла входных данных тестов
+TESTS_FILENAME = INPUT_PATH + "tests_settings.txt"
 
-def draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width):
-    plt.xlabel("Интервалы")
-    plt.ylabel("Частоты")
-    plt.xticks(intervals, rotation=90)
-    plt.plot(theor_intervals, theor_v, marker="o")
-    plt.bar(intervals[:len(intervals) - 1], v, width=bar_width, alpha=0.5, 
-            align="edge", edgecolor="grey", color="lightgrey")
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig(picturename)
-    plt.clf()   
+# Названия файла выходных данных
+TESTS_RESULT = OUTPUT_PATH + "tests_result.txt"
 
-
-# Сформировать гистограмму теоретической и эмпирической функции плотности распределения
-def make_histogram(picturename, intervals, v, mu, nu):
-    theor_intervals = []
-    theor_v = []
-    bar_width = intervals[-1] / (len(intervals) - 1)
-    for i in range(len(intervals)):
-        theor_intervals.append(i * bar_width + bar_width / 2)
-        theor_v.append(stats.f.cdf((i + 1) * bar_width, mu, nu) - stats.f.cdf(i * bar_width, mu, nu))
-    draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width)
-
+# Названия файлов выходных данных гистограмм/графиков
+HISTOGRAM = OUTPUT_PATH + "histogram.png"
+CHART     = OUTPUT_PATH + "chart.png"
 
 
 def main():
-    alpha = 0.05
-    n = 200
-    mu = 4
-    nu = 2
+    # Чтение данных тестов
+    n, mu, nu, alpha, precision, histogram_run, chart_run = ff.read_tests_settings(TESTS_FILENAME)
+    # Формирование последовательности
     sequence, modeling_time = alg.make_sequence(n, mu, nu)
+    # Формирование интервалов
     intervals = alg.get_intervals(sequence)
     hits, v = alg.interval_hits(sequence, intervals)
-    make_histogram("hist.png", intervals, v, mu, nu)
-    r, S, PSS, passed = alg.chi2_test(sequence, intervals, hits, mu, nu, alpha)
-    print(r, S, PSS, passed)
-    S, PSS, passed = alg.cms_test(sequence, mu, v, alpha)
-    print(S, PSS, passed)
+    # Тест критерия Хи-квадрат
+    chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(sequence, intervals, hits, mu, nu, alpha)
+    # Тест критерия Крамера-Мизеса-Смирнов
+    cms_S, cms_PSS, cms_passed = alg.cms_test(sequence, mu, v, alpha)
+    ff.write_tests_results(TESTS_RESULT, precision, mu, nu, alpha, sequence, 
+                           intervals, hits, modeling_time,
+                           chi2_r, chi2_S, chi2_PSS, chi2_passed, cms_S, cms_PSS, cms_passed)
+    if chart_run:
+        alg.make_chart(CHART, mu, nu)
+    if histogram_run:
+        alg.make_histogram(HISTOGRAM, intervals, v, mu, nu)
 
 
 if __name__ == "__main__":
