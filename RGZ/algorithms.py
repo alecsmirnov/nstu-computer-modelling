@@ -1,7 +1,7 @@
 import file_functions as ff
 from math import sqrt, gamma, log, log10, exp, cos, sin, pi
 from mpmath import nsum, inf
-from scipy.stats import f
+from scipy.stats import f, chi2
 from scipy.integrate import quad
 from random import uniform
 from time import time
@@ -26,9 +26,9 @@ def fisher_distribution(mu, nu):
 
 
 # Генерация последовательности и подсчёт времени
-def make_sequence(n, mu, nu):
+def make_sequence(n, distribution, *arg):
     start_time = time()
-    sequence = [fisher_distribution(mu, nu) for _ in range(n)]
+    sequence = [distribution(*arg) for _ in range(n)]
     modeling_time = time() - start_time
     return sequence, modeling_time
 
@@ -53,25 +53,25 @@ def interval_hits(sequence, intervals):
 
 
 # Сформировать гистограмму теоретической и эмпирической функции плотности распределения
-def make_histogram(picturename, intervals, v, mu, nu):
+def make_histogram(picturename, intervals, v, theor_distributuon, *arg):
     theor_intervals = []
     theor_v = []
     bar_width = intervals[-1] / (len(intervals) - 1)
     for i in range(len(intervals)):
         theor_intervals.append(i * bar_width + bar_width / 2)
-        theor_v.append(f.cdf((i + 1) * bar_width, mu, nu) - f.cdf(i * bar_width, mu, nu))
+        theor_v.append(theor_distributuon((i + 1) * bar_width, *arg) - theor_distributuon(i * bar_width, *arg))
     ff.draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width)
 
 
 # Сформировать график функции
-def make_chart(picturename, mu, nu):
-    ff.draw_chart(picturename, "Функция распределения Фишера", "x", "F(x)", f.cdf, mu, nu)
+def make_chart(picturename, theor_distributuon, *arg):
+    ff.draw_chart(picturename, "Функция распределения Фишера", "x", "F(x)", theor_distributuon, *arg)
 
 
 # Тест критерия Хи-квадрат
-def chi2_test(sequence, intervals, hits, mu, nu, alpha):
+def chi2_test(sequence, intervals, hits, alpha, theor_distributuon, *arg):
     n = len(sequence)
-    intervals_p = [f.cdf(x, mu, nu) - f.cdf(y, mu, nu) for x, y in zip(intervals[1:], intervals[:-1])]
+    intervals_p = [theor_distributuon(x, *arg) - theor_distributuon(y, *arg) for x, y in zip(intervals[1:], intervals[:-1])]
     S = n * sum((hit / n - p)**2 / p if p else 0 for hit, p in zip(hits, intervals_p))
     r = len(intervals) - 1
     integral_res = quad(lambda S: S**(r / 2 - 1) * exp(-S / 2), S, inf)[0]
@@ -80,13 +80,8 @@ def chi2_test(sequence, intervals, hits, mu, nu, alpha):
     return r, S, PSS, passed
 
 
-# Подсчёт кол-ва реализации случайной величины
-def F(sequence, i):
-    return sum(1 for x in sorted(sequence) if x < i) / len(sequence)
-
-
 def I(mu, z):
-    return float(nsum(lambda i: (z / 2)**(mu + 2 * i) / (gamma(i + 1) * gamma(i + mu + 1)), [0, inf]))
+    return float(nsum(lambda i: (z / 2)**(mu + 2 * i) / (gamma(i + 1) * gamma(i + mu + 1)), [0, 5]))
 
 
 def a1(S):
@@ -101,10 +96,10 @@ def a1(S):
 
 
 # Тест критерия Крамера-Мизеса-Смирнов
-def cms_test(sequence, mu, nu, alpha):
+def cms_test(sequence, alpha, theor_distributuon, *arg):
     sorted_seq = sorted(sequence)
     n = len(sorted_seq)
-    S = 1 / (12 * n) + sum((F(f.cdf(sorted_seq[i], mu, nu), i) - (2 * i - 1) / (2 * n))**2 for i in range(n))
+    S = 1 / (12 * n) + sum((theor_distributuon(sorted_seq[i], *arg) - (2 * i - 1) / (2 * n))**2 for i in range(n))
     PSS = 1 - a1(S) 
     passed = alpha < PSS
     return S, PSS, passed
