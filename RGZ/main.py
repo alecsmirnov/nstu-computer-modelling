@@ -17,7 +17,7 @@ CHART     = OUTPUT_PATH + "chart.png"
 
 
 def main():
-    '''
+    #'''  
     empiric_distr = alg.chi2_distribution
     theor_distr = alg.chi2.cdf
     k = 5
@@ -29,17 +29,16 @@ def main():
     intervals = alg.get_intervals(sequence)
     hits, v = alg.interval_hits(sequence, intervals)
     # Тест критерия Хи-квадрат
-    chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(sequence, intervals, hits, alpha, theor_distr, k)
+    chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(n, intervals, hits, alpha, theor_distr, k)
     # Тест критерия Крамера-Мизеса-Смирнов
     cms_S, cms_PSS, cms_passed = alg.cms_test(sequence, alpha, theor_distr, k)
     ff.write_tests_results(TESTS_RESULT, precision, mu, nu, alpha, sequence, 
                            intervals, hits, modeling_time,
                            chi2_r, chi2_S, chi2_PSS, chi2_passed, cms_S, cms_PSS, cms_passed)
     if chart_run:
-        alg.make_chart(CHART, theor_distr, k)
+        alg.make_chart(CHART, "Функция распределения Хи-квадрат", theor_distr, k)
     if histogram_run:
         alg.make_histogram(HISTOGRAM, intervals, v, theor_distr, k)
-
     '''
     empiric_distr = alg.fisher_distribution
     theor_distr = alg.f.cdf
@@ -51,17 +50,17 @@ def main():
     intervals = alg.get_intervals(sequence)
     hits, v = alg.interval_hits(sequence, intervals)
     # Тест критерия Хи-квадрат
-    chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(sequence, intervals, hits, alpha, theor_distr, mu, nu)
+    chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(n, intervals, hits, alpha, theor_distr, mu, nu)
     # Тест критерия Крамера-Мизеса-Смирнов
     cms_S, cms_PSS, cms_passed = alg.cms_test(sequence, alpha, theor_distr, mu, nu)
     ff.write_tests_results(TESTS_RESULT, precision, mu, nu, alpha, sequence, 
                            intervals, hits, modeling_time,
                            chi2_r, chi2_S, chi2_PSS, chi2_passed, cms_S, cms_PSS, cms_passed)
     if chart_run:
-        alg.make_chart(CHART, theor_distr, mu, nu)
+        alg.make_chart(CHART, "Функция распределения Фишера", theor_distr, mu, nu)
     if histogram_run:
         alg.make_histogram(HISTOGRAM, intervals, v, theor_distr, mu, nu)
-        
+    '''     
 
 
 if __name__ == "__main__":

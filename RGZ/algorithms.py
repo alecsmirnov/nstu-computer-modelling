@@ -36,7 +36,7 @@ def make_sequence(n, distribution, *args):
 # Разбиение последовательности на интервалы
 def get_intervals(sequence):
     k = int(5 * log10(len(sequence)))
-    intervals_width = max(sequence) / k
+    intervals_width = (max(sequence) - min(sequence)) / k
     intervals = [x * intervals_width for x in range(0, k + 1)] 
     return intervals
 
@@ -64,13 +64,12 @@ def make_histogram(picturename, intervals, v, theor_distributuon, *args):
 
 
 # Сформировать график функции
-def make_chart(picturename, theor_distributuon, *args):
-    ff.draw_chart(picturename, "Функция распределения Фишера", "x", "F(x)", theor_distributuon, *args)
+def make_chart(picturename, title, theor_distributuon, *args):
+    ff.draw_chart(picturename, title, "x", "F(x)", theor_distributuon, *args)
 
 
 # Тест критерия Хи-квадрат
-def chi2_test(sequence, intervals, hits, alpha, theor_distributuon, *args):
-    n = len(sequence)
+def chi2_test(n, intervals, hits, alpha, theor_distributuon, *args):
     intervals_p = [theor_distributuon(x, *args) - theor_distributuon(y, *args) for x, y in zip(intervals[1:], intervals[:-1])]
     S = n * sum((hit / n - p)**2 / p if p else 0 for hit, p in zip(hits, intervals_p))
     r = len(intervals) - 1
