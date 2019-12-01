@@ -49,7 +49,7 @@ def make_histogram(picturename, intervals, v, mu, nu):
 
 def main():
     alpha = 0.05
-    n = 1000
+    n = 200
     mu = 4
     nu = 2
     sequence, modeling_time = alg.make_sequence(n, mu, nu)

@@ -1,9 +1,12 @@
 import random
 import math
+import mpmath
 import time
 import scipy
 import scipy.stats as stats
 import scipy.integrate as integrate
+
+from mpmath import nsum, gamma, inf
 
 
 def muller_method():
@@ -23,14 +26,16 @@ def fisher_distribution(mu, nu):
 
 def make_sequence(n, mu, nu):
     start_time = time.time()
-    return [fisher_distribution(mu, nu) for _ in range(n)], time.time() - start_time
+    sequence = [fisher_distribution(mu, nu) for _ in range(n)]
+    modeling_time = time.time() - start_time
+    return sequence, modeling_time
 
 
 # Разбиение последовательности на интервалы
 def get_intervals(sequence):
     k = int(5 * scipy.log10(len(sequence)))
-    interval_width = max(sequence) / k
-    intervals = [x * interval_width for x in range(0, k + 1)] 
+    intervals_width = max(sequence) / k
+    intervals = [x * intervals_width for x in range(0, k + 1)] 
     return intervals
 
 
@@ -63,22 +68,17 @@ def F(sequence, i):
 
 
 def I(mu, z):
-    result = 0
-    iters_count = 10
-    for i in range(iters_count):
-        result += (z / 2)**(mu + 2 * i) / (math.gamma(i + 1) * math.gamma(i + mu + 1))
-    return result
+    return float(nsum(lambda i: (z / 2)**(mu + 2 * i) / (gamma(i + 1) * gamma(i + mu + 1)), [0, inf]))
 
 
 def a1(S):
-    result = 0
-    iters_count = 10
-    for i in range(iters_count):
+    def sum_item(i):
         z = (4 * i + 1)**2 / (16 * S)
-        arg1 = math.gamma(i + 0.5) * math.sqrt(4 * i + 1) / (math.gamma(0.5) * math.gamma(i + 1)) * math.exp(-z) 
-        arg2 = I(-0.25, z) - I(0.25, z)
-        result += arg1 * (arg2 - int(arg2))
-    result /= math.sqrt(2 * S)
+        val1 = gamma(i + 0.5) * math.sqrt(4 * i + 1) / (gamma(0.5) * gamma(i + 1)) * math.exp(-z)
+        val2 = I(-0.25, z) - I(0.25, z)
+        return val1 * (val2 - int(val2))
+    ITER_MAX = 5
+    result = float(nsum(sum_item, [0, ITER_MAX])) / math.sqrt(2 * S)
     return result 
 
 
