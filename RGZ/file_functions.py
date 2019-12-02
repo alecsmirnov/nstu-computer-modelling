@@ -26,7 +26,7 @@ def draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_widt
     plt.xlabel("Интервалы")
     plt.ylabel("Частоты")
     plt.xticks(intervals, rotation=90)
-    plt.plot(theor_intervals, theor_v, marker="o")
+    plt.plot(theor_intervals[:len(theor_intervals) - 1], theor_v, marker="o")
     plt.bar(intervals[:len(intervals) - 1], v, width=bar_width, alpha=0.5, 
             align="edge", edgecolor="grey", color="lightgrey")
     plt.grid(True)

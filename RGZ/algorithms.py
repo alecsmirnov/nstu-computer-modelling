@@ -17,7 +17,7 @@ def muller_method():
 
 # Распределение Хи-квадрат
 def chi2_distribution(k):
-    return sum(val**2 for sub in (muller_method() for _ in range(k)) for val in sub)
+    return sum(val**2 for sub in (muller_method() for _ in range(k // 2)) for val in sub)
 
 
 # Распределения Фишера
@@ -37,8 +37,8 @@ def make_sequence(n, distribution, *args):
 def get_intervals(sequence):
     k = int(5 * log10(len(sequence)))
     intervals_width = (max(sequence) - min(sequence)) / k
-    intervals = [x * intervals_width for x in range(0, k + 1)] 
-    return intervals
+    intervals = [x * intervals_width + min(sequence) for x in range(0, k + 1)] 
+    return intervals, intervals_width
 
 
 # Расчёт попаданий элементов последовательности в интервалы
@@ -53,14 +53,11 @@ def interval_hits(sequence, intervals):
 
 
 # Сформировать гистограмму теоретической и эмпирической функции плотности распределения
-def make_histogram(picturename, intervals, v, theor_distributuon, *args):
-    theor_intervals = []
-    theor_v = []
-    bar_width = intervals[-1] / (len(intervals) - 1)
-    for i in range(len(intervals)):
-        theor_intervals.append(i * bar_width + bar_width / 2)
-        theor_v.append(theor_distributuon((i + 1) * bar_width, *args) - theor_distributuon(i * bar_width, *args))
-    ff.draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width)
+def make_histogram(picturename, intervals, intervals_width, v, theor_distributuon, *args):
+    theor_intervals = [x + intervals_width / 2 for x in intervals]
+    theor_v = [theor_distributuon(x, *args) - theor_distributuon(y, *args) 
+               for x, y in zip(intervals[1:], intervals[:-1])]
+    ff.draw_histogram(picturename, intervals, v, theor_intervals, theor_v, intervals_width)
 
 
 # Сформировать график функции
@@ -70,7 +67,8 @@ def make_chart(picturename, title, theor_distributuon, *args):
 
 # Тест критерия Хи-квадрат
 def chi2_test(n, intervals, hits, alpha, theor_distributuon, *args):
-    intervals_p = [theor_distributuon(x, *args) - theor_distributuon(y, *args) for x, y in zip(intervals[1:], intervals[:-1])]
+    intervals_p = [theor_distributuon(x, *args) - theor_distributuon(y, *args) 
+                   for x, y in zip(intervals[1:], intervals[:-1])]
     S = n * sum((hit / n - p)**2 / p if p else 0 for hit, p in zip(hits, intervals_p))
     r = len(intervals) - 1
     integral_res = quad(lambda S: S**(r / 2 - 1) * exp(-S / 2), S, inf)[0]
@@ -80,7 +78,7 @@ def chi2_test(n, intervals, hits, alpha, theor_distributuon, *args):
 
 
 def I(mu, z):
-    return float(nsum(lambda i: (z / 2)**(mu + 2 * i) / (gamma(i + 1) * gamma(i + mu + 1)), [0, 5]))
+    return float(nsum(lambda i: (z / 2)**(mu + 2 * i) / (gamma(i + 1) * gamma(i + mu + 1)), [0, inf]))
 
 
 def a1(S):
@@ -88,7 +86,7 @@ def a1(S):
         z = (4 * i + 1)**2 / (16 * S)
         val1 = gamma(i + 0.5) * sqrt(4 * i + 1) / (gamma(0.5) * gamma(i + 1)) * exp(-z)
         val2 = I(-0.25, z) - I(0.25, z)
-        return val1 * (val2 - int(val2))
+        return val1 * val2
     ITER_MAX = 5
     result = float(nsum(sum_item, [0, ITER_MAX])) / sqrt(2 * S)
     return result 

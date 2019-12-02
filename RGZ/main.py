@@ -20,13 +20,13 @@ def main():
     #'''  
     empiric_distr = alg.chi2_distribution
     theor_distr = alg.chi2.cdf
-    k = 5
+    k = 12
     # Чтение данных тестов
     n, mu, nu, alpha, precision, histogram_run, chart_run = ff.read_tests_settings(TESTS_FILENAME)
     # Формирование последовательности
     sequence, modeling_time = alg.make_sequence(n, empiric_distr, k)
     # Формирование интервалов
-    intervals = alg.get_intervals(sequence)
+    intervals, intervals_width = alg.get_intervals(sequence)
     hits, v = alg.interval_hits(sequence, intervals)
     # Тест критерия Хи-квадрат
     chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(n, intervals, hits, alpha, theor_distr, k)
@@ -38,7 +38,7 @@ def main():
     if chart_run:
         alg.make_chart(CHART, "Функция распределения Хи-квадрат", theor_distr, k)
     if histogram_run:
-        alg.make_histogram(HISTOGRAM, intervals, v, theor_distr, k)
+        alg.make_histogram(HISTOGRAM, intervals, intervals_width, v, theor_distr, k)
     '''
     empiric_distr = alg.fisher_distribution
     theor_distr = alg.f.cdf
@@ -47,7 +47,7 @@ def main():
     # Формирование последовательности
     sequence, modeling_time = alg.make_sequence(n, empiric_distr, mu, nu)
     # Формирование интервалов
-    intervals = alg.get_intervals(sequence)
+    intervals, intervals_width = alg.get_intervals(sequence)
     hits, v = alg.interval_hits(sequence, intervals)
     # Тест критерия Хи-квадрат
     chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(n, intervals, hits, alpha, theor_distr, mu, nu)
@@ -59,7 +59,7 @@ def main():
     if chart_run:
         alg.make_chart(CHART, "Функция распределения Фишера", theor_distr, mu, nu)
     if histogram_run:
-        alg.make_histogram(HISTOGRAM, intervals, v, theor_distr, mu, nu)
+        alg.make_histogram(HISTOGRAM, intervals, intervals_width, v, theor_distr, mu, nu)
     '''     
 
 
