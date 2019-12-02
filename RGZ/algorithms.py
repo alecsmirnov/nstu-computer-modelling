@@ -53,11 +53,11 @@ def interval_hits(sequence, intervals):
 
 
 # Сформировать гистограмму теоретической и эмпирической функции плотности распределения
-def make_histogram(picturename, intervals, intervals_width, v, theor_distributuon, *args):
+def make_histogram(picturename, title, intervals, intervals_width, v, theor_distributuon, *args):
     theor_intervals = [x + intervals_width / 2 for x in intervals]
     theor_v = [theor_distributuon(x, *args) - theor_distributuon(y, *args) 
                for x, y in zip(intervals[1:], intervals[:-1])]
-    ff.draw_histogram(picturename, intervals, v, theor_intervals, theor_v, intervals_width)
+    ff.draw_histogram(picturename, title, intervals, v, theor_intervals, theor_v, intervals_width)
 
 
 # Сформировать график функции

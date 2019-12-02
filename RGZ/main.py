@@ -32,13 +32,13 @@ def main():
     chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(n, intervals, hits, alpha, theor_distr, k)
     # Тест критерия Крамера-Мизеса-Смирнов
     cms_S, cms_PSS, cms_passed = alg.cms_test(sequence, alpha, theor_distr, k)
-    ff.write_tests_results(TESTS_RESULT, precision, mu, nu, alpha, sequence, 
+    ff.write_tests_results(TESTS_RESULT, precision, [k], ["k"], alpha, sequence, 
                            intervals, hits, modeling_time,
                            chi2_r, chi2_S, chi2_PSS, chi2_passed, cms_S, cms_PSS, cms_passed)
     if chart_run:
         alg.make_chart(CHART, "Функция распределения Хи-квадрат", theor_distr, k)
     if histogram_run:
-        alg.make_histogram(HISTOGRAM, intervals, intervals_width, v, theor_distr, k)
+        alg.make_histogram(HISTOGRAM, "Функция плотности распределения Хи-квадрат", intervals, intervals_width, v, theor_distr, k)
     '''
     empiric_distr = alg.fisher_distribution
     theor_distr = alg.f.cdf
@@ -53,13 +53,13 @@ def main():
     chi2_r, chi2_S, chi2_PSS, chi2_passed = alg.chi2_test(n, intervals, hits, alpha, theor_distr, mu, nu)
     # Тест критерия Крамера-Мизеса-Смирнов
     cms_S, cms_PSS, cms_passed = alg.cms_test(sequence, alpha, theor_distr, mu, nu)
-    ff.write_tests_results(TESTS_RESULT, precision, mu, nu, alpha, sequence, 
+    ff.write_tests_results(TESTS_RESULT, precision, [mu, nu], ["mu", "nu"], alpha, sequence, 
                            intervals, hits, modeling_time,
                            chi2_r, chi2_S, chi2_PSS, chi2_passed, cms_S, cms_PSS, cms_passed)
     if chart_run:
         alg.make_chart(CHART, "Функция распределения Фишера", theor_distr, mu, nu)
     if histogram_run:
-        alg.make_histogram(HISTOGRAM, intervals, intervals_width, v, theor_distr, mu, nu)
+        alg.make_histogram(HISTOGRAM, "Функция плотности распределения Фишера", intervals, intervals_width, v, theor_distr, mu, nu)
     '''     
 
 
