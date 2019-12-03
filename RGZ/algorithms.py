@@ -1,7 +1,7 @@
 import file_functions as ff
 from math import sqrt, gamma, log, log10, exp, cos, sin, pi
 from mpmath import nsum, inf
-from scipy.stats import f, chi2
+from scipy.stats import f, chi2, norm
 from scipy.integrate import quad
 from random import uniform
 from time import time
@@ -13,6 +13,16 @@ def muller_method():
     eps1 = sqrt(-2 * log(p1)) * cos(2 * pi * p2)
     eps2 = sqrt(-2 * log(p2)) * sin(2 * pi * p1)
     return eps1, eps2
+
+
+# Нормальное распределение
+def normal_distribution(counter=[0, 0.0, 0.0]):
+    if counter[0] % 2 == 0:
+        counter[1], counter[2] = muller_method()
+    else:
+        counter[1] = counter[2]
+    counter[0] += 1
+    return counter[1]
 
 
 # Распределение Хи-квадрат

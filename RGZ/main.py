@@ -24,13 +24,13 @@ def main():
      # Чтение данных тестов
     n_list, mu, nu, k, alpha, precision, histogram_run, chart_run = ff.read_tests_settings(INPUT_PATH + TESTS_FILENAME)
     # Инициализация параметров для выполнения нескольких распределений
-    DISTR_COUNT    = 2
-    DISTR_TITLE    = ["Фишера", "Хи-квадрат"]
-    DISTR_FILENAME = ["fisher", "chi2"]
-    EMPIRIC_DISTR  = [alg.fisher_distribution, alg.chi2_distribution]
-    THEOR_DISTR    = [alg.f.cdf, alg.chi2.cdf]
-    ARGS_LIST      = [[mu, nu], [k]]
-    ARGS_LABEL     = [["mu", "nu"], ["k"]]
+    DISTR_COUNT    = 3
+    DISTR_TITLE    = ["Фишера", "Хи-квадрат", "Нормального"]
+    DISTR_FILENAME = ["fisher", "chi2", "norm"]
+    EMPIRIC_DISTR  = [alg.fisher_distribution, alg.chi2_distribution, alg.normal_distribution]
+    THEOR_DISTR    = [alg.f.cdf, alg.chi2.cdf, alg.norm.cdf]
+    ARGS_LIST      = [[mu, nu], [k], []]
+    ARGS_LABEL     = [["mu", "nu"], ["k"], []]
     for i in range(DISTR_COUNT):
         for j in range(len(n_list)):
             # Формирование последовательности
