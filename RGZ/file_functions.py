@@ -5,6 +5,14 @@ from numpy import arange
 
 def str_to_bool(str):
     return True if str == "True" else False
+    
+
+def get_filename(distr_filename, filename, n=0):
+    result = distr_filename
+    if n != 0:
+        result += "_" + str(n)
+    result += "_" + filename
+    return result
 
 
 def draw_chart(picturename, title, x_label, y_label, func, *args):
@@ -47,10 +55,12 @@ def read_tests_settings(filename):
         print("Невозможно открыть файл: {0}".format(filename))
         sys.exit()
     # Длина поселдовательности
-    n = int(f.readline())
-    # Параметры распределения
+    n_list = [int(val) for val in f.readline().split()]
+    # Параметры распределения Фишера
     mu = int(f.readline())
     nu = int(f.readline())
+    # Параметр распределения Хи-квадрат
+    k = int(f.readline())
     # Уровень значимости
     alpha = float(f.readline())
     # Точность вычислений
@@ -58,7 +68,7 @@ def read_tests_settings(filename):
     histogram_run = str_to_bool(f.readline().rstrip('\n'))
     chart_run = str_to_bool(f.readline().rstrip('\n'))
     f.close()
-    return n, mu, nu, alpha, precision, histogram_run, chart_run
+    return n_list, mu, nu, k, alpha, precision, histogram_run, chart_run
 
 
 # Запись результатов выполнения тестов (Хи-квадрат и Смирнова)
