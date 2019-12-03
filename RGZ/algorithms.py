@@ -20,7 +20,7 @@ def chi2_distribution(k):
     return sum(val**2 for sub in (muller_method() for _ in range(k // 2)) for val in sub)
 
 
-# Распределения Фишера
+# Распределения Фишера (Основное распределение)
 def fisher_distribution(mu, nu):
     return chi2_distribution(mu) * nu / (chi2_distribution(nu) * mu)
 
@@ -33,7 +33,7 @@ def make_sequence(n, distribution, *args):
     return sequence, modeling_time
 
 
-# Разбиение последовательности на интервалы
+# Разбиение последовательности на интервалы и расчёт ширины интервалов
 def get_intervals(sequence):
     k = int(5 * log10(len(sequence)))
     intervals_width = (max(sequence) - min(sequence)) / k
@@ -41,7 +41,7 @@ def get_intervals(sequence):
     return intervals, intervals_width
 
 
-# Расчёт попаданий элементов последовательности в интервалы
+# Расчёт (вероятностей) попаданий элементов последовательности в интервалы
 def interval_hits(sequence, intervals):
     hits = [] 
     v = []
