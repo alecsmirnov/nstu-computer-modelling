@@ -16,18 +16,21 @@ def muller_method():
 
 
 # Нормальное распределение
-def normal_distribution(counter=[0, 0.0, 0.0]):
-    if counter[0] % 2 == 0:
-        counter[1], counter[2] = muller_method()
+def normal_distribution(even=[True], eps=[0.0, 0.0]):
+    if even[0] == True:
+        eps[0], eps[1] = muller_method()
     else:
-        counter[1] = counter[2]
-    counter[0] += 1
-    return counter[1]
+        eps[0] = eps[1]
+    even[0] = not even[0]
+    return eps[0]
 
 
 # Распределение Хи-квадрат
 def chi2_distribution(k):
-    return sum(val**2 for sub in (muller_method() for _ in range(k // 2)) for val in sub)
+    result = sum(val**2 for sub in (muller_method() for _ in range(k // 2)) for val in sub)
+    if k % 2 != 0:
+        result += muller_method()[0]
+    return result
 
 
 # Распределения Фишера (Основное распределение)
