@@ -1,6 +1,6 @@
-import sys
 import matplotlib.pyplot as plt
 from numpy import arange
+from sys import exit
 
 
 def str_to_bool(str):
@@ -47,30 +47,6 @@ def draw_histogram(picturename, title, intervals, v, theor_intervals, theor_v, b
     plt.close()
 
 
-# Чтение данных для выполняемых тестов
-def read_tests_settings(filename):
-    try:
-        f = open(filename, "r")
-    except IOError:
-        print("Невозможно открыть файл: {0}".format(filename))
-        sys.exit()
-    # Длина поселдовательности
-    n_list = [int(val) for val in f.readline().split()]
-    # Параметры распределения Фишера
-    mu = int(f.readline())
-    nu = int(f.readline())
-    # Параметр распределения Хи-квадрат
-    k = int(f.readline())
-    # Уровень значимости
-    alpha = float(f.readline())
-    # Точность вычислений
-    precision = int(f.readline())
-    histogram_run = str_to_bool(f.readline().rstrip('\n'))
-    chart_run = str_to_bool(f.readline().rstrip('\n'))
-    f.close()
-    return n_list, mu, nu, k, alpha, precision, histogram_run, chart_run
-
-
 # Запись результатов выполнения тестов (Хи-квадрат и Смирнова)
 def write_tests_results(filename, precision, arg_list, arg_labels, alpha, sequence, intervals, hits, modeling_time,
                         chi2_r, chi2_S, chi2_PSS, chi2_passed, cms_S, cms_PSS, cms_passed):
@@ -80,8 +56,6 @@ def write_tests_results(filename, precision, arg_list, arg_labels, alpha, sequen
     f.write("Количество элементов (n): {0}\n".format(n))
     for i in range(len(arg_list)):
         f.write("Параметры распределения ({0}): {1}\n".format(arg_labels[i], arg_list[i]))
-    #f.write("Параметры распределения (mu): {0}\n".format(mu))
-    #f.write("Параметры распределения (nu): {0}\n".format(nu))
     f.write("\nПоследовательность: {0}\n".format([round(i, precision) for i in sequence]))
     f.write("Интервалы: {0}\n".format([round(i, precision) for i in intervals]))
     f.write("Попадания в интервалы: {0}\n".format([round(i, precision) for i in hits]))
