@@ -48,7 +48,7 @@ def read_tests_settings(filename):
 
 
 def main():
-     # Чтение данных тестов
+    # Чтение данных тестов
     n_list, correction_n, mu, nu, k, alpha, precision, histogram_run, chart_run = read_tests_settings(INPUT_PATH + TESTS_FILENAME)
     # Инициализация параметров для выполнения нескольких распределений
     DISTR_COUNT    = 3

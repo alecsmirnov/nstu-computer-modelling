@@ -47,7 +47,7 @@ def draw_histogram(picturename, title, intervals, v, theor_intervals, theor_v, b
     plt.close()
 
 
-# Запись результатов выполнения тестов (Хи-квадрат и Смирнова)
+# Запись результатов выполнения тестов (Хи-квадрат и Крамера-Мизеса-Смирнов)
 def write_tests_results(filename, precision, arg_list, arg_labels, alpha, sequence, intervals, hits, modeling_time,
                         chi2_r, chi2_S, chi2_PSS, chi2_passed, cms_S, cms_PSS, cms_passed):
     n = len(sequence)
