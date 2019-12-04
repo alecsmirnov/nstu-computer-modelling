@@ -10,8 +10,8 @@ def summation_method(n):
 
 # Поправка 1 для метода суммирования
 def correction1(n):
-    eps = summation_method(n)
-    return eps + (eps**3 - 3 * eps) / (20 * n)
+    xi = summation_method(n)
+    return xi + (xi**3 - 3 * xi) / (20 * n)
 
 
 # Нормальное распределение
