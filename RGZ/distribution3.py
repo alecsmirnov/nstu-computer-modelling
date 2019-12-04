@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt, exp
 from random import uniform
 from scipy.stats import rayleigh, norm
 
@@ -20,5 +20,5 @@ def normal_distribution(n):
 
 
 # Распределения Рэлея (Основное распределение)
-def rayleigh_distribution(sigm, n):
+def rayleigh_distribution(_, sigm, n):
     return sigm * sqrt(normal_distribution(n)**2 + normal_distribution(n)**2)

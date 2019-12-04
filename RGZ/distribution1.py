@@ -23,10 +23,6 @@ def normal_distribution(even=[True], eps=[0.0, 0.0]):
 
 # Распределение Хи-квадрат
 def chi2_distribution(k):
-    #result = sum(val**2 for sub in (muller_method() for _ in range(k // 2)) for val in sub)
-    #if k % 2 != 0:
-    #    result += muller_method()[0]
-    #return result
     return sum(normal_distribution()**2 for _ in range(k))
 
 

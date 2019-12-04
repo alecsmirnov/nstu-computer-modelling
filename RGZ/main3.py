@@ -53,8 +53,9 @@ def main():
     DISTR_FILENAME = ["rayleigh", "norm"]
     EMPIRIC_DISTR  = [distr3.rayleigh_distribution, distr3.normal_distribution]
     THEOR_DISTR    = [distr3.rayleigh.cdf, distr3.norm.cdf]
-    ARGS_LIST      = [[sigm, correction_n], [correction_n]]
-    ARGS_LABEL     = [["sigm", "correction_n"], ["correction_n"]]
+    # Неиспользуемый параметр loc для распределения Рэлея
+    ARGS_LIST      = [[0, sigm, correction_n], [correction_n]]
+    ARGS_LABEL     = [["_", "sigm", "correction_n"], ["correction_n"]]
     for i in range(DISTR_COUNT):
         for j in range(len(n_list)):
             # Формирование последовательности
@@ -67,7 +68,7 @@ def main():
             # Тест критерия Крамера-Мизеса-Смирнов
             cms_S, cms_PSS, cms_passed = alg.cms_test(sequence, alpha, THEOR_DISTR[i], *ARGS_LIST[i][:-1])
             ff.write_tests_results(OUTPUT_PATH + ff.get_filename(DISTR_FILENAME[i], TESTS_RESULT, n_list[j]), precision, 
-                                   ARGS_LIST[i], ARGS_LABEL[i], alpha, sequence, intervals, hits, modeling_time,
+                                   ARGS_LIST[i][1:], ARGS_LABEL[i][1:], alpha, sequence, intervals, hits, modeling_time,
                                    chi2_r, chi2_S, chi2_PSS, chi2_passed, cms_S, cms_PSS, cms_passed)
             if histogram_run:
                 alg.make_histogram(OUTPUT_PATH + ff.get_filename(DISTR_FILENAME[i], HISTOGRAM, n_list[j]), 
