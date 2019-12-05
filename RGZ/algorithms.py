@@ -16,7 +16,7 @@ def make_sequence(n, distribution, *args):
 # Разбиение последовательности на интервалы и расчёт ширины интервалов
 def get_intervals(sequence):
     k = int(5 * log10(len(sequence)))
-    sorted_seq = sorted(sequence,reverse=True)
+    sorted_seq = sorted(sequence, reverse=True)
     x_max_i = len(sorted_seq) // 10
     intervals_width = (sorted_seq[x_max_i] - min(sequence)) / k
     intervals = [x * intervals_width + min(sequence) for x in range(0, k + 1)] 
