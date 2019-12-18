@@ -82,3 +82,21 @@ def cms_test(sequence, alpha, theor_distributuon, *args):
     PSS = 1 - a1(S) 
     passed = alpha < PSS
     return S, PSS, passed
+
+
+# Разность между накопленными частотами
+def calc_D(sequence, theor_distributuon, *args):
+    n = len(sequence)
+    D_plus = max([(i+1) / n - theor_distributuon(sequence[i], *args) for i in range(n)])
+    D_minus = max([theor_distributuon(sequence[i],*args) - i / n for i in range(n)])
+    return max(D_plus, D_minus)
+
+
+# Тест критерия Смирнова
+def smirnov_test(sequence, alpha, theor_distributuon, *args):
+    sort_seq = sorted(sequence)
+    n = len(sort_seq)
+    S = (6 * n * calc_D(sort_seq, theor_distributuon, *args) + 1)**2 / (9 * n)
+    PSS = exp(-S / 2)
+    passed = alpha < PSS
+    return S, PSS, passed
