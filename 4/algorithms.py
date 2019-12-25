@@ -1,36 +1,35 @@
-import math
-import random
-import time
-import scipy
-import scipy.stats as stats
-import scipy.integrate as integrate
-import file_functions as ff
+from math import sqrt, exp, inf, gamma, pi
+from scipy import log, log10
+from scipy.integrate import quad
+from random import uniform
+from time import time
+from file_functions import draw_histogram, draw_chart
 
 
 # Функция плотности распределения Рэлея
 def rayleigh_density(x, sigm):
-    return x / sigm**2 * scipy.exp(-x**2 / (2 * sigm**2))
+    return x / sigm**2 * exp(-x**2 / (2 * sigm**2))
 
 
 # Функция распределения Рэлея
 def rayleigh_distribution(x, sigm):
-    return 1 - scipy.exp(-x**2 / (2 * sigm**2))
+    return 1 - exp(-x**2 / (2 * sigm**2))
 
 
 # Обратная функция Рэлея
 def rayleigh_inverse(y, sigm):
-    return sigm * math.sqrt(-2 * scipy.log(1 - y))
+    return sigm * sqrt(-2 * log(1 - y))
 
 
 # Генерация последовательности и подсчёт времени
 def make_sequence(n, sigm):
-    start_time = time.time()
-    return [rayleigh_inverse(random.uniform(0, 1), sigm) for _ in range(n)], time.time() - start_time
+    start_time = time()
+    return [rayleigh_inverse(uniform(0, 1), sigm) for _ in range(n)], time() - start_time
 
 
 # Разбиение последовательности на интервалы
 def get_intervals(sequence):
-    k = int(5 * scipy.log10(len(sequence)))
+    k = int(5 * log10(len(sequence)))
     interval_width = max(sequence) / k
     intervals = [x * interval_width for x in range(0, k + 1)] 
     return intervals
@@ -55,13 +54,13 @@ def make_histogram(picturename, intervals, v, sigm):
     for i in range(len(intervals)):
         theor_intervals.append(i * bar_width + bar_width / 2)
         theor_v.append(rayleigh_distribution((i + 1) * bar_width, sigm) - rayleigh_distribution(i * bar_width, sigm))
-    ff.draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width)
+    draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_width)
 
 
 # Сформировать график функции
 def make_charts(density_name, distribution_name, *arg):
-    ff.draw_chart(density_name, "Функция плотности распределения", "x", "f(x)", rayleigh_density, *arg)
-    ff.draw_chart(distribution_name, "Функция распределения", "x", "F(x)", rayleigh_distribution, *arg)
+    draw_chart(density_name, "Функция плотности распределения", "x", "f(x)", rayleigh_density, *arg)
+    draw_chart(distribution_name, "Функция распределения", "x", "F(x)", rayleigh_distribution, *arg)
 
 
 # Тест критерия типа Хи-квадрат
@@ -71,8 +70,8 @@ def chi2_test(sequence, intervals, hits, sigm, alpha):
                    for x, y in zip(intervals[1:], intervals[:-1])]
     S = n * sum((hit / n - p)**2 / p if p else 0 for hit, p in zip(hits, intervals_p))
     r = len(intervals) - 1
-    integral_res = integrate.quad(lambda S: S**(r / 2 - 1) * math.exp(-S / 2), S, math.inf)[0]
-    PSS = integral_res / (2**(r / 2) * math.gamma(r / 2))
+    integral_res = quad(lambda S: S**(r / 2 - 1) * exp(-S / 2), S, inf)[0]
+    PSS = integral_res / (2**(r / 2) * gamma(r / 2))
     passed = alpha < PSS
     return r, S, PSS, passed
 
@@ -90,12 +89,12 @@ def a2(S):
     result = 0
     iters_count = 10
     for i in range(iters_count):
-        C1 = math.gamma(i + 0.5) * (4 * i + 1) / (math.gamma(0.5) * math.gamma(i + 1)) * (-1)**i
-        C2 = math.exp(-(4 * i + 1)**2 * math.pi**2 / (8 * S)) 
-        integral_res = integrate.quad(lambda y: math.exp(S / (8 * (y**2 + 1)) - 
-                       ((4 * i + 1)**2 * math.pi**2 * y**2) / (8 * S)), 0, math.inf)[0] 
+        C1 = gamma(i + 0.5) * (4 * i + 1) / (gamma(0.5) * gamma(i + 1)) * (-1)**i
+        C2 = exp(-(4 * i + 1)**2 * pi**2 / (8 * S)) 
+        integral_res = quad(lambda y: exp(S / (8 * (y**2 + 1)) - 
+                       ((4 * i + 1)**2 * pi**2 * y**2) / (8 * S)), 0, inf)[0] 
         result += C1 * C2 * integral_res
-    result *= math.sqrt(2 * math.pi) / S 
+    result *= sqrt(2 * pi) / S 
     return result 
 
 
@@ -107,7 +106,7 @@ def anderson_darling_test(sequence, sigm, alpha):
     for i in range(1, n): 
         arg = (2 * i - 1) / (2 * n) 
         Fi = F(rayleigh_distribution(sort_sequence[i], sigm), 1) 
-        S += arg * math.log(Fi) + (1 - arg) * math.log(1 - Fi)
+        S += arg * log(Fi) + (1 - arg) * log(1 - Fi)
     S = -n - 2 * S
     PSS = 1 - a2(S) 
     passed = alpha < PSS
