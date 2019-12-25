@@ -1,6 +1,7 @@
-import sys
-import numpy as np
 import matplotlib.pyplot as plt
+from numpy import arange
+from sys import exit
+
 
 # Отсутствие параметра для вывода результата
 NONE = 0
@@ -11,14 +12,16 @@ def str_to_bool(str):
 
 
 def draw_histogram(picturename, intervals, v, theor_intervals, theor_v):
-    plt.xlabel("Количество интервалов")
+    plt.xlabel("Интервалы")
     plt.ylabel("Частоты")
-    plt.xticks(np.arange(max(intervals) + 2))
-    plt.plot(theor_intervals, theor_v, marker="o")
-    plt.bar(intervals, v, width=1, align="center", edgecolor="grey", color="lightgrey")
+    plt.xticks(arange(max(intervals) + 2), rotation=90)
+    plt.plot(theor_intervals, theor_v, marker="o", label="Теоритическая")
+    plt.bar(intervals, v, width=1, align="center", edgecolor="grey", color="lightgrey", label="Эмпирическая")
+    plt.legend(loc="best", frameon=True)
     plt.grid(True)
     plt.savefig(picturename)
     plt.clf()
+    plt.close()
 
 
 # Чтение данных для выполняемых тестов
@@ -27,7 +30,7 @@ def read_tests_settings(filename):
         f = open(filename, "r")
     except IOError:
         print("Невозможно открыть файл: {0}".format(filename))
-        sys.exit()
+        exit()
     # Длина поселдовательности
     n = int(f.readline())
     # Уровень значимости
