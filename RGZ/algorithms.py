@@ -17,8 +17,8 @@ def make_sequence(n, distribution, *args):
 def get_intervals(sequence):
     k = int(5 * log10(len(sequence)))
     sorted_seq = sorted(sequence, reverse=True)
-    x_max_i = len(sorted_seq) // 10
-    intervals_width = (sorted_seq[x_max_i] - min(sequence)) / k
+    #x_max_i = len(sorted_seq) // 10
+    intervals_width = (max(sequence) - min(sequence)) / k
     intervals = [x * intervals_width + min(sequence) for x in range(0, k + 1)] 
     return intervals, intervals_width
 

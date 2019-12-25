@@ -1,4 +1,6 @@
-import sys
+import matplotlib.pyplot as plt
+from numpy import arange
+from sys import exit
 
 
 # Перевод стокового логического значения в булевое
@@ -6,55 +8,22 @@ def str_to_bool(str):
     return True if str == "True" else False
 
 
-# Чтение данных для генератора псевдослучайных чисел
-def read_generator_settings(filename):
-    try:
-        f = open(filename, "r")
-    except IOError:
-        print("Невозможно открыть файл: ", filename)
-        sys.exit()
-    # Начальный элемент последовательности
-    x0 = int(f.readline())
-    # Коэффициенты генератора
-    a, b, c = [int(x) for x in f.readline().split()]
-    # Длина и Основание последователности
-    n, m = [int(x) for x in f.readline().split()]
-    f.close()
-    return  x0, a, b, c, n, m
-
-
-# Чтение данных для выполняемых тестов
-def read_tests_settings(filename):
-    try:
-        f = open(filename, "r")
-    except IOError:
-        print("Невозможно открыть файл: ", filename)
-        sys.exit()
-    # Количество тестов
-    TESTS_COUNT = 5
-    tests_data = [[] for i in range(TESTS_COUNT)]
-    # Получаем длину допустимого периода последовательности
-    T_len_min = int(f.readline())
-    # Данные для теста 1: alpha
-    tests_data[0].append(float(f.readline()))
-    data_temp = f.readline().split()
-    # Данные для теста 2: K, alpha, логическое условие рисования графика
-    tests_data[1].append(int(data_temp[0]))
-    tests_data[1].append(float(data_temp[1]))
-    tests_data[1].append(str_to_bool(data_temp[2]))
-    # Данные для теста 3: К, r, alpha
-    data_temp = f.readline().split()
-    tests_data[2].append(int(data_temp[0]))
-    tests_data[2].append(int(data_temp[1]))
-    tests_data[2].append(float(data_temp[2]))
-    # Данные для хи^2-теста: alpha, логическое условие рисования графика
-    data_temp = f.readline().split()
-    tests_data[3].append(float(data_temp[0]))
-    tests_data[3].append(str_to_bool(data_temp[1]))
-    # Данные для теста Колмогорова: alpha
-    tests_data[4].append(float(f.readline()))
-    f.close()
-    return  T_len_min, tests_data
+# Отрисовка гистограммы по заданным относительным частотам попадания в интервал
+def draw_histogram(picturename, data, n=0, m=0):
+    x = arange(len(data))
+    data_min = min([x for x in data if x != 0])
+    plt.bar(x, height=data, width=1, align="edge") 
+    plt.xticks(x)
+    plt.yticks(arange(0, max(data) + data_min, step=data_min/2))
+    title = "Частотная гистограмма"
+    if n != 0 and m != 0:
+        title += " (n = {0}, m = {1})".format(n, m)
+    plt.title(title)
+    plt.xlabel("Количество интервалов (K)")
+    plt.ylabel("Относительные частоты (v)")
+    plt.grid(True)
+    plt.savefig(picturename)
+    plt.clf()
 
 
 # Записать последовательность в файл
@@ -88,31 +57,31 @@ def write_analysis_result(filename, x0, a, b, c, n, m, T_len, T_len_min, tests_r
 
 
 # Записать в файл результаты теста 1
-def write_test1_results(filename, precision, alpha, n, Q, a, b, val, passed):
+def write_test1_results(filename, precision, alpha, n, Q, a, b, passed):
     f = open(filename, "w")
     f.write("Квантиль уровня (1 - alpha / 2) нормального распределения: {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))
     f.write("Количество перестановок (Q): {0}\n".format(Q))
     f.write("Доверительный интервал: [{0}; {1}]\n".format(round(a, precision), round(b, precision)))
-    f.write("Значение (n / 2): {0}\n".format(round(val, precision)))
+    f.write("Значение (n / 2): {0}\n".format(round(n / 2, precision)))
     if passed == True:
         hit_text = "Значение попадает в доверительный интервал: {0} <= {1} <= {2}\n"
-        f.write(hit_text.format(round(a, precision), round(val, precision), round(b, precision)))
+        f.write(hit_text.format(round(a, precision), round(n / 2, precision), round(b, precision)))
     else:
         miss_text = "Значение не попадает в доверительный интервал: {0} < {1} < {2}\n"
-        if val < a:
-            f.write(miss_text.format(round(val, precision), round(a, precision), round(b, precision)))
+        if n / 2 < a:
+            f.write(miss_text.format(round(n / 2, precision), round(a, precision), round(b, precision)))
         else:
-            f.write(miss_text.format(round(a, precision), round(b, precision), round(val, precision)))
+            f.write(miss_text.format(round(a, precision), round(b, precision), round(n / 2, precision)))
     f.write("\nРезультат прохождения теста: {0}".format(passed))
     f.close()
 
 
 # Записать в файл результаты теста 2
-def write_test2_results(filename, precision, alpha, n, m, K,
-                        v, freq_pass, freq_table, 
-                        MX, MX_pass, MX_a, MX_b, MX_val, 
-                        DX, DX_pass, DX_a, DX_b, DX_val, passed):
+def write_test2_results(filename, precision, alpha, n, m, K, 
+                        v, freq_table, freq_pass, 
+                        MX, MX_a, MX_b, MX_val, MX_pass, 
+                        DX, DX_a, DX_b, DX_val, DX_pass, passed):
     f = open(filename, "w")
     f.write("Квантиль уровня (1 - alpha / 2) нормального распределения: {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))
@@ -154,7 +123,7 @@ def write_test2_results(filename, precision, alpha, n, m, K,
 
 
 # Записать в файл результаты теста 3
-def write_test3_results(filename, alpha, n, m, K, r, iters_info, passed):
+def write_test3_results(filename, _, alpha, n, m, K, r, iters_info, passed):
     f = open(filename, "w")
     f.write("Квантиль уровня (1 - alpha / 2) нормального распределения: {0}\n".format(alpha))
     f.write("Количество элементов (n): {0}\n".format(n))
@@ -179,12 +148,6 @@ def write_chi2_results(filename, precision, alpha, n, m, K, E, v, S, S_alpha, pa
     f.write("Степени свободы (r): {0}\n".format(K - 1))
     f.write("\nТеоретическая вероятность попадания в интервал (E): {0}\n".format(round(E, precision)))
     f.write("Относительные частоты попадания в интервал (v): {0}\n".format(str(v).strip('[]')))
-    #f.write("\nЗначение статистики критерия (S): {0}\n".format(round(S, precision)))
-    #f.write("Критическое значение (S_alpha): {0}\n".format(round(S_alpha, precision)))
-    #if passed == True:
-    #    f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
-    #else:
-    #    f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
     f.write("\nЗначение P{{S > S*}}: {0}\n".format(round(S_alpha, precision)))
     if passed == True:
         f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(S_alpha, precision), alpha))
@@ -201,12 +164,6 @@ def write_kolmogorov_results(filename, precision, alpha, n, m, D, S, S_alpha, pa
     f.write("Количество элементов (n): {0}\n".format(n))
     f.write("Основание последовательности (m): {0}\n".format(m))
     f.write("Разность между накопленными частотами (D): {0}\n".format(round(D, precision)))
-    #f.write("\nЗначение статистики критерия (S): {0}\n".format(round(S, precision)))
-    #f.write("Критическое значение (S_alpha): {0}\n".format(round(S_alpha, precision)))
-    #if passed == True:
-    #    f.write("Гипотеза не отвергается: S < S_alpha = {0} < {1}\n".format(round(S, precision), round(S_alpha, precision)))
-    #else:
-    #    f.write("Гипотеза отвергается: S > S_alpha = {0} > {1}\n".format(round(S, precision), round(S_alpha, precision)))
     f.write("\nЗначение P{{S > S*}}: {0}\n".format(round(S_alpha, precision)))
     if passed == True:
         f.write("Гипотеза не отвергается: P{{S > S*}} > alpha = {0} > {1}\n".format(round(S_alpha, precision), alpha))
