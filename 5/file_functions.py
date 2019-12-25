@@ -1,6 +1,6 @@
-import sys
-import numpy as np
 import matplotlib.pyplot as plt
+from numpy import arange
+from sys import exit
 
 
 def str_to_bool(str):
@@ -11,17 +11,19 @@ def draw_histogram(picturename, intervals, v, theor_intervals, theor_v, bar_widt
     plt.xlabel("Интервалы")
     plt.ylabel("Частоты")
     plt.xticks(intervals, rotation=90)
-    plt.plot(theor_intervals, theor_v, marker="o")
+    plt.plot(theor_intervals, theor_v, marker="o", label="Теоритическая")
     plt.bar(intervals[:len(intervals) - 1], v, width=bar_width, alpha=0.5, 
-            align="edge", edgecolor="grey", color="lightgrey")
+            align="edge", edgecolor="grey", color="lightgrey", label="Эмпирическая")
+    plt.legend(loc="best", frameon=True)
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(picturename)
     plt.clf()
+    plt.close()
     
 
 def draw_chart(picturename, title, x_label, y_label, a, b, func, mu, sigm):
-    x = np.arange(a, b, 0.01) 
+    x = arange(a, b, 0.01) 
     y = [func(x, mu, sigm) for x in x]
     plt.title(title + " (μ = {0}; σ = {1})".format(mu, sigm))
     plt.xlabel(x_label) 
@@ -38,7 +40,7 @@ def read_tests_settings(filename):
         f = open(filename, "r")
     except IOError:
         print("Невозможно открыть файл: {0}".format(filename))
-        sys.exit()
+        exit()
     # Длина поселдовательности
     n = int(f.readline())
     # Параметры распределения
